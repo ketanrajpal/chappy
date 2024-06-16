@@ -1,0 +1,104 @@
+div.auth {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    background-color: #292929;
+
+    div.auth-container {
+        width: 28rem;
+        margin: auto;
+        display: grid;
+        row-gap: 1rem;
+
+        img.logo {
+            display: block;
+            margin: auto;
+            margin-bottom: 2rem;
+        }
+    }
+
+    &.error {
+        form {
+            border: 1px solid #b00020;
+        }
+    }
+
+    button.submit {
+        background-color: #2367e3;
+        border: none;
+        color: #ffffff;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        min-width: 6rem;
+        cursor: pointer;
+        transition: all 0.2s ease-in;
+
+        &:hover {
+            background-color: #1e5ec1;
+        }
+    }
+
+    form {
+        height: 65px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        background-color: #1e1e1e;
+        border-radius: 0.5rem;
+        border: 1px solid #1e1e1e;
+
+        .button {
+            display: grid;
+            padding: 0.5rem;
+        }
+    }
+
+    div.login {
+        div.container {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            padding: 0.5rem;
+
+            input {
+                border: none;
+                background-color: transparent;
+                color: #a0a0a0;
+                width: 100%;
+                &:focus {
+                    outline: none;
+                }
+                &::placeholder {
+                    color: #a0a0a0;
+                }
+            }
+        }
+    }
+
+    div.verify {
+        div.container {
+            display: grid;
+            grid-template-columns: 1fr;
+            padding: 0.5rem;
+            div.otp {
+                display: grid !important;
+                grid-template-columns: repeat(6, 1fr) !important;
+                column-gap: 0.5rem;
+                input {
+                    border-radius: 0.5rem;
+                    display: grid;
+                    height: 100%;
+                    width: 100% !important;
+                    border: none;
+                    background-color: rgba(0, 0, 0, 0.2);
+                    color: #a0a0a0;
+                    &:focus {
+                        outline: none;
+                    }
+                    &::placeholder {
+                        color: #a0a0a0;
+                    }
+                }
+            }
+        }
+    }
+}
