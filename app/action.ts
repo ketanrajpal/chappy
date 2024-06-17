@@ -1,66 +1,81 @@
 'use server'
 
 import { client } from '@/services/twilio'
-import { LoginSchema, State } from './schema'
+import { LoginSchema, State, VerifySchema } from './schema'
+import { Country } from '@/store/auth'
 
+/* login phone number */
 export async function Login(previousState: State, formData: FormData): Promise<State> {
-    const code = formData.get('code') as string
+    const country: Country = JSON.parse(formData.get('country') as string)
     const phone = formData.get('phone') as string
 
-    const result = LoginSchema.safeParse({ code, phone })
+    const result = LoginSchema.safeParse({ country, phone })
 
     if (!result.success) {
         return {
             ...previousState,
-            error: {
-                ...previousState.error,
-                login: true,
-            },
+            error: true,
         }
     }
 
-    const phoneNumber = `${code}${phone}`
-    //const verify = await client.verify.v2.services(process.env.REACT_APP_SERVICE_SID as string).verifications.create({ to: phoneNumber, channel: "sms" });
+    const phoneNumber = `${country.phone}${phone}`
+    const verify = await client.verify.v2
+        .services(process.env.REACT_APP_SERVICE_SID as string)
+        .verifications.create({ to: phoneNumber, channel: 'sms' })
+
+    if (verify.status !== 'pending') {
+        return {
+            ...previousState,
+            error: true,
+        }
+    }
 
     return {
         success: true,
         user: {
-            code,
+            country,
             phone,
         },
-        error: {
-            login: false,
-            code: false,
-        },
+        error: false,
+        counter: previousState.counter + 1,
     }
 }
 
+/* verify phone number */
 export async function Verify(previousState: State, formData: FormData): Promise<State> {
+    const country: Country = JSON.parse(formData.get('country') as string)
+    const phone = formData.get('phone') as string
     const otp = formData.get('otp') as string
 
-    const result = LoginSchema.safeParse({ otp })
+    const result = VerifySchema.safeParse({ country, phone, otp })
 
     if (!result.success) {
         return {
             ...previousState,
-            error: {
-                ...previousState.error,
-                login: true,
-            },
+            error: true,
         }
     }
 
-    //const verification = await client.verify.v2.services(process.env.REACT_APP_SERVICE_SID as string).verificationChecks.create({ to: phoneNumber, code: otp });
+    const phoneNumber = `${country.phone}${phone}`
+    const verification = await client.verify.v2
+        .services(process.env.REACT_APP_SERVICE_SID as string)
+        .verificationChecks.create({ to: phoneNumber, code: otp })
+
+    if (verification.status !== 'approved') {
+        return {
+            ...previousState,
+            error: true,
+        }
+    }
 
     return {
         success: true,
         user: {
-            code: '',
-            phone: '',
+            country: country,
+            phone: phone,
         },
-        error: {
-            login: false,
-            code: false,
-        },
+        error: false,
+        counter: previousState.counter,
+        username: verification.to,
     }
 }

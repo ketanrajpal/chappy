@@ -1,29 +1,34 @@
-import { z } from "zod";
-
-export type User = {
-  code: string;
-  phone: string;
-};
+import { User } from '@/store/auth'
+import { z } from 'zod'
 
 export type State = {
-  success: boolean;
-  user: User | undefined;
-  error: {
-    login: boolean;
-    code: boolean;
-  };
-};
+    success: boolean
+    error: boolean
+    user: User | undefined
+    counter: number
+    username?: string
+}
+
+export const CountrySchema = z.object({
+    name: z.string().min(2),
+    phone: z.string().min(2),
+    flag: z.string().min(2),
+})
 
 export const LoginSchema = z.object({
-  code: z.string().min(2),
-  phone: z.string().min(10),
-});
+    country: CountrySchema,
+    phone: z.string().min(10),
+})
+
+export const VerifySchema = z.object({
+    country: CountrySchema,
+    phone: z.string().min(10),
+    otp: z.string().min(6),
+})
 
 export const initialState: State = {
-  success: false,
-  user: undefined,
-  error: {
-    login: false,
-    code: false,
-  },
-};
+    success: false,
+    user: undefined,
+    error: false,
+    counter: 0,
+}

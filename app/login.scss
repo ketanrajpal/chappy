@@ -18,12 +18,6 @@ div.auth {
         }
     }
 
-    &.error {
-        form {
-            border: 1px solid #b00020;
-        }
-    }
-
     button.submit {
         background-color: #2367e3;
         border: none;
@@ -38,18 +32,25 @@ div.auth {
             background-color: #1e5ec1;
         }
     }
-
-    form {
-        height: 65px;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        background-color: #1e1e1e;
-        border-radius: 0.5rem;
-        border: 1px solid #1e1e1e;
-
-        .button {
+    div.login,
+    div.verify {
+        &.error {
+            form {
+                border: 1px solid #b00020;
+            }
+        }
+        form {
+            height: 65px;
             display: grid;
-            padding: 0.5rem;
+            grid-template-columns: 1fr auto;
+            background-color: #1e1e1e;
+            border-radius: 0.5rem;
+            border: 1px solid #1e1e1e;
+
+            .button {
+                display: grid;
+                padding: 0.5rem;
+            }
         }
     }
 
@@ -97,6 +98,30 @@ div.auth {
                     &::placeholder {
                         color: #a0a0a0;
                     }
+                }
+            }
+        }
+    }
+
+    div.resend {
+        button.resend {
+            background: transparent;
+            color: #a0a0a0;
+            border: none;
+            align-self: center;
+            display: block;
+            text-align: center;
+            width: 100%;
+            line-height: 200%;
+            font-size: 0.9rem;
+
+            span {
+                color: #2367e3;
+            }
+
+            &.active {
+                &:hover {
+                    text-decoration: underline;
                 }
             }
         }
