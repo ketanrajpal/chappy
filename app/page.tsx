@@ -140,8 +140,7 @@ function ResendButton() {
     useEffect(() => {
         timerState.duration > 0 &&
             setTimeout(
-                () =>
-                    dispatch(start({ duration: timerState.duration - 10000 })),
+                () => dispatch(start({ duration: timerState.duration - 1000 })),
                 1000
             )
     }, [timerState.duration, dispatch])
