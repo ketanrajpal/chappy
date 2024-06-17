@@ -1,9 +1,11 @@
+@import '../styles/var';
+
 div.auth {
     height: 100vh;
     width: 100vw;
     display: flex;
     align-items: center;
-    background-color: #292929;
+    background-color: map-get($color, 'background-primary');
 
     div.auth-container {
         width: 28rem;
@@ -19,7 +21,7 @@ div.auth {
     }
 
     button.submit {
-        background-color: #2367e3;
+        background-color: map-get($color, 'primary');
         border: none;
         color: #ffffff;
         border-radius: 0.5rem;
@@ -27,29 +29,34 @@ div.auth {
         min-width: 6rem;
         cursor: pointer;
         transition: all 0.2s ease-in;
+        box-sizing: border-box;
 
         &:hover {
-            background-color: #1e5ec1;
+            background-color: map-get($color, 'secondary');
         }
     }
     div.login,
     div.verify {
         &.error {
             form {
-                border: 1px solid #b00020;
+                border: 1px solid map-get($color, 'error');
             }
         }
         form {
             height: 65px;
             display: grid;
             grid-template-columns: 1fr auto;
-            background-color: #1e1e1e;
+            background-color: map-get($color, 'background-secondary');
             border-radius: 0.5rem;
-            border: 1px solid #1e1e1e;
+            border: 1px solid map-get($color, 'background-secondary');
 
             .button {
                 display: grid;
+                box-sizing: border-box;
+                height: 100%;
                 padding: 0.5rem;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr;
             }
         }
     }
@@ -63,13 +70,13 @@ div.auth {
             input {
                 border: none;
                 background-color: transparent;
-                color: #a0a0a0;
+                color: map-get($color, 'input');
                 width: 100%;
                 &:focus {
                     outline: none;
                 }
                 &::placeholder {
-                    color: #a0a0a0;
+                    color: map-get($color, 'input');
                 }
             }
         }
@@ -91,12 +98,12 @@ div.auth {
                     width: 100% !important;
                     border: none;
                     background-color: rgba(0, 0, 0, 0.2);
-                    color: #a0a0a0;
+                    color: map-get($color, 'input');
                     &:focus {
                         outline: none;
                     }
                     &::placeholder {
-                        color: #a0a0a0;
+                        color: map-get($color, 'input');
                     }
                 }
             }
@@ -106,7 +113,7 @@ div.auth {
     div.resend {
         button.resend {
             background: transparent;
-            color: #a0a0a0;
+            color: map-get($color, 'input');
             border: none;
             align-self: center;
             display: block;
@@ -116,7 +123,7 @@ div.auth {
             font-size: 0.9rem;
 
             span {
-                color: #2367e3;
+                color: map-get($color, 'primary');
             }
 
             &.active {

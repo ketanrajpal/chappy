@@ -1,0 +1,34 @@
+@import '../../styles/var';
+
+header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    width: 100%;
+    margin: auto;
+    padding: 2rem 0;
+    align-items: center;
+    position: relative;
+    z-index: 1000;
+
+    button {
+        border: none;
+        background-color: map-get($color, 'background-secondary');
+        border-radius: 0.3rem;
+        padding: 0.5rem 1rem;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        column-gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        span.icon {
+            color: map-get($color, 'primary');
+        }
+        span {
+            color: map-get($color, 'input');
+        }
+        &:hover {
+            background-color: map-get($color, 'background-tertiary');
+        }
+    }
+}

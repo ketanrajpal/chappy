@@ -40,6 +40,8 @@ export const AuthSlice = createSlice({
         logout: (state) => {
             state.user = undefined
             state.authenticated = false
+            state.counter = 0
+            state.username = undefined
         },
         counter: (state) => {
             state.counter = state.counter + 1

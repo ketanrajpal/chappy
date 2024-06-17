@@ -5,7 +5,10 @@ import { LoginSchema, State, VerifySchema } from './schema'
 import { Country } from '@/store/auth'
 
 /* login phone number */
-export async function Login(previousState: State, formData: FormData): Promise<State> {
+export async function Login(
+    previousState: State,
+    formData: FormData
+): Promise<State> {
     const country: Country = JSON.parse(formData.get('country') as string)
     const phone = formData.get('phone') as string
 
@@ -42,7 +45,10 @@ export async function Login(previousState: State, formData: FormData): Promise<S
 }
 
 /* verify phone number */
-export async function Verify(previousState: State, formData: FormData): Promise<State> {
+export async function Verify(
+    previousState: State,
+    formData: FormData
+): Promise<State> {
     const country: Country = JSON.parse(formData.get('country') as string)
     const phone = formData.get('phone') as string
     const otp = formData.get('otp') as string
@@ -76,6 +82,6 @@ export async function Verify(previousState: State, formData: FormData): Promise<
         },
         error: false,
         counter: previousState.counter,
-        username: verification.to,
+        username: verification.to.split('+')[1],
     }
 }

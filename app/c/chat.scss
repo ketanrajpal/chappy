@@ -1,0 +1,146 @@
+@import '../../styles/var.scss';
+
+body {
+    background-color: map-get($color, 'background-primary');
+}
+
+.chat-container {
+    max-width: 50rem;
+    margin: auto;
+    max-height: 100vh;
+    box-sizing: border-box;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+
+    div.shadow {
+        position: absolute;
+        height: 15rem;
+        width: 100%;
+        top: 5rem;
+        background: linear-gradient(
+            180deg,
+            map-get($color, 'background-primary'),
+            transparent
+        );
+    }
+
+    div.chats {
+        display: flex;
+        flex-direction: column;
+        overflow: scroll;
+        scrollbar-width: none;
+        gap: 1rem;
+        scroll-snap-type: y mandatory;
+        padding-top: 10rem;
+
+        div.chat {
+            max-width: 90%;
+            display: grid;
+            align-items: center;
+
+            &.user {
+                margin-left: auto;
+                grid-template-columns: 1fr auto;
+
+                div.message {
+                    background-color: map-get($color, 'background-secondary');
+                    text-align: right;
+                }
+            }
+            &.model {
+                grid-template-columns: auto 1fr;
+                div.message {
+                    background-color: map-get($color, 'background-tertiary');
+                }
+            }
+            div.message {
+                color: map-get($color, 'input');
+                border-radius: 0.3rem;
+                line-height: 1.8;
+                padding: 1rem 1.5rem;
+                scroll-snap-align: end;
+                letter-spacing: 0.01rem;
+
+                display: inline-block;
+                font-size: 0.9rem;
+
+                &:hover {
+                    color: map-get($color, 'input-hover');
+                }
+            }
+
+            nav {
+                button {
+                    padding: 0.5rem;
+                    background-color: transparent;
+                    border: none;
+                    color: map-get($color, 'input');
+                    border-radius: 0.5rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in;
+                    span {
+                        font-size: 1.1rem;
+                    }
+
+                    &:hover {
+                        color: map-get($color, 'primary');
+                    }
+                }
+            }
+        }
+    }
+
+    div.chat-form {
+        &.error {
+            form {
+                border: 1px solid map-get($color, 'error');
+            }
+        }
+
+        form {
+            display: block;
+            background-color: map-get($color, 'background-secondary');
+            border-radius: 0.5rem;
+            border: 1px solid map-get($color, 'background-secondary');
+            margin: 2rem 0;
+
+            div.container {
+                height: 3rem;
+                display: grid;
+                grid-template-columns: 1fr auto;
+                padding: 0.5rem;
+
+                input {
+                    border: none;
+                    background-color: transparent;
+                    color: map-get($color, 'input');
+                    width: 100%;
+                    padding: 0 1rem;
+                    &:focus {
+                        outline: none;
+                    }
+                    &::placeholder {
+                        color: map-get($color, 'input');
+                    }
+                }
+
+                button.submit {
+                    background-color: map-get($color, 'primary');
+                    border: none;
+                    color: #ffffff;
+                    border-radius: 0.5rem;
+                    font-size: 0.9rem;
+                    min-width: 6rem;
+                    cursor: pointer;
+                    transition: all 0.2s ease-in;
+
+                    &:hover {
+                        background-color: map-get($color, 'secondary');
+                    }
+                }
+            }
+        }
+    }
+}

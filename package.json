@@ -8,8 +8,13 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "browser": {
+    "child_process": false
+  },
   "dependencies": {
+    "@google/generative-ai": "^0.12.0",
     "@reduxjs/toolkit": "^2.2.5",
+    "mongodb": "^6.7.0",
     "next": "14.2.4",
     "normalize.css": "^8.0.1",
     "react": "^18",

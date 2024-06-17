@@ -1,10 +1,17 @@
 'use client'
 
 import { authReducer } from '@/store/auth'
+import { chatReducer } from '@/store/chat'
 import { timerReducer } from '@/store/timer'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { ReactNode, useRef } from 'react'
-import { Provider, TypedUseSelectorHook, useDispatch, useSelector, useStore } from 'react-redux'
+import {
+    Provider,
+    TypedUseSelectorHook,
+    useDispatch,
+    useSelector,
+    useStore,
+} from 'react-redux'
 import { persistReducer } from 'redux-persist'
 import persistStore from 'redux-persist/es/persistStore'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -16,11 +23,21 @@ const persistConfig = {
     storage,
 }
 
-const persistedReducer = persistReducer(persistConfig, combineReducers({ auth: authReducer, timer: timerReducer }))
+const persistedReducer = persistReducer(
+    persistConfig,
+    combineReducers({
+        auth: authReducer,
+        timer: timerReducer,
+        chat: chatReducer,
+    })
+)
 
 const store = configureStore({
     reducer: persistedReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }).concat(thunk),
 })
 
 export const makeStore = () => store
@@ -37,7 +54,11 @@ export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector
 export const useAppStore: () => AppStore = useStore
 
 /** stored provider */
-export default function StoreProvider({ children }: { readonly children: ReactNode }) {
+export default function StoreProvider({
+    children,
+}: {
+    readonly children: ReactNode
+}) {
     const storeRef = useRef<AppStore>()
     if (!storeRef.current) {
         storeRef.current = makeStore()
