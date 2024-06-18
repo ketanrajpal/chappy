@@ -6,9 +6,11 @@ import Image from 'next/image'
 import './header.scss'
 import { useAppDispatch } from '@/services/redux'
 import { logout } from '@/store/auth'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
     const dispatch = useAppDispatch()
+    const router = useRouter()
     return (
         <header>
             <div className="logo">
@@ -21,7 +23,12 @@ export default function Header() {
                 />
             </div>
             <div className="menu">
-                <button onClick={() => dispatch(logout())}>
+                <button
+                    onClick={() => {
+                        dispatch(logout())
+                        router.push('/')
+                    }}
+                >
                     <span className="material-symbols-rounded icon">
                         logout
                     </span>

@@ -3,12 +3,12 @@
 import { useAppDispatch, useAppSelector } from '@/services/redux'
 import { logout } from '@/store/auth'
 import { useRouter } from 'next/navigation'
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { chats, create, DeleteChatAction } from './action'
-import { initialChatState } from './schema'
-import { useFormState } from 'react-dom'
-import { Chat, createChat, deleteChat, setChats } from '@/store/chat'
-import Button from '@/components/button/button'
+import { useEffect, useRef, useState } from 'react'
+import { chats, DeleteChatAction } from './action'
+import { Chat, deleteChat, setChats } from '@/store/chat'
+
+import Loading from '@/assets/loader.svg'
+import Image from 'next/image'
 
 export default function Page() {
     const authState = useAppSelector((state) => state.auth)
@@ -17,6 +17,8 @@ export default function Page() {
     const router = useRouter()
     const ref = useRef<HTMLDivElement>(null)
     const [chatLength, setChatLength] = useState(0)
+
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (!authState.authenticated) {
@@ -27,15 +29,13 @@ export default function Page() {
 
     useEffect(() => {
         if (chatState.chats.length > chatLength) {
-            const element = ref.current
-            if (element) {
-                element.scrollTop = element.scrollHeight
-            }
             setChatLength(chatState.chats.length)
+            handleScroll()
         }
     }, [chatState.chats, chatLength])
 
     useEffect(() => {
+        setLoading(true)
         chats({ username: authState.username as string })
             .then((data) => {
                 dispatch(setChats(data))
@@ -43,58 +43,29 @@ export default function Page() {
             .catch((err) => {
                 console.log(err)
             })
+            .finally(() => {
+                setLoading(false)
+                handleScroll()
+            })
     }, [authState.username, dispatch])
 
-    return (
-        <Fragment>
-            <div className="shadow"></div>
-            <div className="chats" ref={ref}>
+    const handleScroll = () => {
+        if (ref.current) {
+            ref.current.scroll({
+                top: ref.current.scrollHeight,
+            })
+        }
+    }
+
+    return loading ? (
+        <Loader />
+    ) : (
+        <div className="chat-content" ref={ref}>
+            <div className="chats">
                 {chatState.chats.map((chat) => (
                     <ChatBubble key={chat._id} chat={chat} />
                 ))}
             </div>
-            <ChatForm />
-        </Fragment>
-    )
-}
-
-function ChatForm() {
-    const [state, formAction] = useFormState(create, initialChatState)
-    const authState = useAppSelector((state) => state.auth)
-    const chatState = useAppSelector((state) => state.chat)
-    const dispatch = useAppDispatch()
-    const ref = useRef<HTMLFormElement>(null)
-
-    useEffect(() => {
-        if (state.success) {
-            if (state.chat && state.chat.length > 0) {
-                state.chat.forEach((chat) => {
-                    if (!chatState.chats.find((c) => c._id === chat._id)) {
-                        dispatch(createChat(chat))
-                    }
-                })
-            }
-            ref.current?.reset()
-        }
-    }, [state.success, dispatch, state.chat, chatState.chats])
-
-    return (
-        <div className={`chat-form ${state.error ? 'error' : ''}`}>
-            <form action={formAction} autoComplete="off" ref={ref}>
-                <div className="container">
-                    <input
-                        name="user"
-                        type="hidden"
-                        value={authState.username}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Type your message here"
-                        name="part"
-                    />
-                    <Button label="Send" />
-                </div>
-            </form>
         </div>
     )
 }
@@ -102,17 +73,17 @@ function ChatForm() {
 function ChatBubble({ chat }: { readonly chat: Chat }) {
     return chat.role === 'user' ? (
         <div className="chat user">
-            <div className="message">{chat.part}</div>
             <nav>
                 <DeleteChat chat={chat} />
             </nav>
+            <div className="description">{chat.part}</div>
         </div>
     ) : (
         <div className="chat model">
+            <div className="description">{chat.part}</div>
             <nav>
                 <DeleteChat chat={chat} />
             </nav>
-            <div className="message">{chat.part}</div>
         </div>
     )
 }
@@ -133,5 +104,13 @@ function DeleteChat({ chat }: { readonly chat: Chat }) {
         <button className="delete" onClick={handleDelete}>
             <span className="material-symbols-rounded">delete</span>
         </button>
+    )
+}
+
+function Loader() {
+    return (
+        <div className="loader">
+            <Image src={Loading} alt="Loading" />
+        </div>
     )
 }

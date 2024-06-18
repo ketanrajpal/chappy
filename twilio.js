@@ -1,4 +1,8 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai')
+const {
+    GoogleGenerativeAI,
+    HarmBlockThreshold,
+    HarmCategory,
+} = require('@google/generative-ai')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 
 // create a new instance of the GoogleGenerativeAI class
@@ -13,34 +17,34 @@ const client = new MongoClient(process.env.MONGODB_URI, {
     },
 })
 
-safety_settings = [
+const safetySettings = [
     {
-        category: 'HARM_CATEGORY_DANGEROUS',
-        threshold: 'BLOCK_NONE',
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
     },
     {
-        category: 'HARM_CATEGORY_HARASSMENT',
-        threshold: 'BLOCK_NONE',
+        category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
     },
     {
-        category: 'HARM_CATEGORY_HATE_SPEECH',
-        threshold: 'BLOCK_NONE',
+        category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
     },
     {
-        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-        threshold: 'BLOCK_NONE',
-    },
-    {
-        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-        threshold: 'BLOCK_NONE',
+        category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+        threshold: HarmBlockThreshold.BLOCK_NONE,
     },
 ]
+
 exports.handler = async function (context, event, callback) {
     // get the user's phone number
     const user = event.currentUser.split(':+')[1]
 
     // get the generative model
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({
+        model: 'gemini-1.5-flash',
+        safetySettings,
+    })
 
     const chat_history = [
         {
@@ -86,7 +90,7 @@ exports.handler = async function (context, event, callback) {
     const message = event.inbound
     const msg = `${message}. Answer in 50 words in UK English. Also add relevant emojis and be creative and quirky`
 
-    const result = await modelChat.sendMessage(msg, { safety_settings })
+    const result = await modelChat.sendMessage(msg)
     const response = await result.response
     const text = response.text()
 

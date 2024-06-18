@@ -7,140 +7,141 @@ body {
 .chat-container {
     max-width: 50rem;
     margin: auto;
-    max-height: 100vh;
+    height: 100vh;
     box-sizing: border-box;
     padding: 0 1.5rem;
     display: grid;
     grid-template-rows: auto 1fr auto;
-    position: relative;
 
-    div.shadow {
-        position: absolute;
-        height: 15rem;
-        width: 100%;
-        top: 5rem;
-        background: linear-gradient(
-            180deg,
-            map-get($color, 'background-primary'),
-            transparent
-        );
-    }
-
-    div.chats {
-        display: flex;
-        flex-direction: column;
+    div.chat-content {
         overflow: scroll;
         scrollbar-width: none;
-        gap: 1rem;
         scroll-snap-type: y mandatory;
-        padding-top: 10rem;
 
-        div.chat {
-            max-width: 90%;
-            display: grid;
-            align-items: center;
+        div.chats {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
 
-            &.user {
-                margin-left: auto;
-                grid-template-columns: 1fr auto;
-
-                div.message {
-                    background-color: map-get($color, 'background-secondary');
-                    text-align: right;
-                }
-            }
-            &.model {
-                grid-template-columns: auto 1fr;
-                div.message {
-                    background-color: map-get($color, 'background-tertiary');
-                }
-            }
-            div.message {
-                color: map-get($color, 'input');
-                border-radius: 0.3rem;
-                line-height: 1.8;
-                padding: 1rem 1.5rem;
+            div.chat {
+                display: flex;
                 scroll-snap-align: end;
-                letter-spacing: 0.01rem;
+                max-width: 80%;
+                border-radius: 0.5rem;
+                align-items: center;
 
-                display: inline-block;
-                font-size: 0.9rem;
-
-                &:hover {
-                    color: map-get($color, 'input-hover');
-                }
-            }
-
-            nav {
-                button {
-                    padding: 0.5rem;
-                    background-color: transparent;
-                    border: none;
+                div.description {
                     color: map-get($color, 'input');
-                    border-radius: 0.5rem;
-                    cursor: pointer;
+                    border-radius: 0.3rem;
+                    line-height: 1.8;
+                    padding: 1rem 1.5rem;
+                    letter-spacing: 0.01rem;
+                    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+                    border: 1px solid map-get($color, 'tertiary');
                     transition: all 0.2s ease-in;
-                    span {
-                        font-size: 1.1rem;
-                    }
 
                     &:hover {
-                        color: map-get($color, 'primary');
+                        color: rgba(255, 255, 255, 0.75);
+                    }
+                }
+
+                &.model {
+                    margin-right: auto;
+                    div.description {
+                        background-color: map-get(
+                            $color,
+                            'background-tertiary'
+                        );
+                    }
+                }
+
+                &.user {
+                    margin-left: auto;
+                    div.description {
+                        background-color: map-get(
+                            $color,
+                            'background-secondary'
+                        );
+                    }
+                }
+
+                nav {
+                    button {
+                        padding: 0.5rem;
+                        background-color: transparent;
+                        border: none;
+                        color: map-get($color, 'input');
+                        border-radius: 0.5rem;
+                        cursor: pointer;
+                        transition: all 0.2s ease-in;
+                        span {
+                            font-size: 1.1rem;
+                        }
+
+                        &:hover {
+                            color: map-get($color, 'primary');
+                        }
                     }
                 }
             }
         }
     }
 
-    div.chat-form {
+    form {
         &.error {
-            form {
-                border: 1px solid map-get($color, 'error');
-            }
+            border: 1px solid map-get($color, 'error');
         }
 
-        form {
-            display: block;
-            background-color: map-get($color, 'background-secondary');
-            border-radius: 0.5rem;
-            border: 1px solid map-get($color, 'background-secondary');
-            margin: 2rem 0;
+        display: block;
+        background-color: map-get($color, 'background-secondary');
+        border-radius: 0.5rem;
+        border: 1px solid map-get($color, 'background-secondary');
+        margin: 2rem 0;
 
-            div.container {
-                height: 3rem;
-                display: grid;
-                grid-template-columns: 1fr auto;
-                padding: 0.5rem;
+        div.container {
+            height: 3rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            padding: 0.5rem;
 
-                input {
-                    border: none;
-                    background-color: transparent;
+            input {
+                border: none;
+                background-color: transparent;
+                color: map-get($color, 'input');
+                width: 100%;
+                padding: 0 1rem;
+                &:focus {
+                    outline: none;
+                }
+                &::placeholder {
                     color: map-get($color, 'input');
-                    width: 100%;
-                    padding: 0 1rem;
-                    &:focus {
-                        outline: none;
-                    }
-                    &::placeholder {
-                        color: map-get($color, 'input');
-                    }
                 }
+            }
 
-                button.submit {
-                    background-color: map-get($color, 'primary');
-                    border: none;
-                    color: #ffffff;
-                    border-radius: 0.5rem;
-                    font-size: 0.9rem;
-                    min-width: 6rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease-in;
+            button.submit {
+                background-color: map-get($color, 'primary');
+                border: none;
+                color: #ffffff;
+                border-radius: 0.5rem;
+                font-size: 0.9rem;
+                min-width: 6rem;
+                cursor: pointer;
+                transition: all 0.2s ease-in;
 
-                    &:hover {
-                        background-color: map-get($color, 'secondary');
-                    }
+                &:hover {
+                    background-color: map-get($color, 'secondary');
                 }
             }
         }
+    }
+}
+
+div.loader {
+    align-items: center;
+    display: grid;
+    width: 10rem;
+    margin: auto;
+    img {
+        width: 100%;
     }
 }

@@ -1,7 +1,8 @@
-import Header from '@/components/header/header'
 import type { Metadata } from 'next'
 
 import './chat.scss'
+import Header from '@/components/header/header'
+import ChatForm from './form'
 
 export const metadata: Metadata = {
     title: 'Create Next App',
@@ -17,6 +18,7 @@ export default function Layout({
         <div className="chat-container">
             <Header />
             {children}
+            <ChatForm />
         </div>
     )
 }
