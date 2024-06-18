@@ -35,6 +35,7 @@ export async function Login(
             }
         }
     } catch (error) {
+        console.log(error)
         return {
             ...previousState,
             serverError: true,
@@ -53,7 +54,7 @@ export async function Login(
     }
 }
 
-export async function Ver(country: Country, phone: string) {
+export async function Resend(country: Country, phone: string) {
     const phoneNumber = `${country.phone}${phone}`
     try {
         const verify = await client.verify.v2
@@ -66,6 +67,7 @@ export async function Ver(country: Country, phone: string) {
 
         return true
     } catch (error) {
+        console.log(error)
         throw new Error('Server Error')
     }
 }
@@ -105,6 +107,7 @@ export async function Verify(
 
         username = verification.to.split('+')[1]
     } catch (error) {
+        console.log(error)
         return {
             ...previousState,
             serverError: true,

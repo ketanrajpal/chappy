@@ -21,13 +21,13 @@ export default function Message() {
     const messageType = (type: string) => {
         switch (type) {
             case 'error':
-                return '❌'
+                return 'error'
             case 'success':
-                return '✅'
+                return 'task_alt'
             case 'warning':
-                return '⚠️'
+                return 'warning'
             case 'info':
-                return 'ℹ️'
+                return 'info'
             default:
                 return ''
         }
@@ -37,10 +37,13 @@ export default function Message() {
         messageState.type &&
         messageState.description && (
             <div className="message">
-                <span className="material-symbols-rounded">
-                    {messageType(messageState.type)}
-                </span>
-                <p>{messageState.description}</p>
+                <div className={`container ${messageState.type}`}>
+                    <span className="material-symbols-rounded">
+                        {messageType(messageState.type)}
+                    </span>
+
+                    <p>{messageState.description}</p>
+                </div>
             </div>
         )
     )

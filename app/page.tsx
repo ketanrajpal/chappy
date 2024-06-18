@@ -5,7 +5,7 @@ import SelectCountry from '@/components/select-country/select-country'
 import './login.scss'
 import { useFormState } from 'react-dom'
 
-import { Login, Ver, Verify } from '@/app/action'
+import { Login, Resend, Verify } from '@/app/action'
 import { initialState } from './schema'
 import OTPInput from 'react-otp-input'
 import { useEffect, useState } from 'react'
@@ -62,7 +62,7 @@ function LoginForm() {
         if (state.serverError) {
             message.set({
                 type: 'error',
-                description: 'A server error occurred. Please try again later.',
+                description: 'Server error. Try again later.',
             })
         }
     }, [state.serverError, message])
@@ -150,7 +150,7 @@ function ResendButton() {
 
     const handleResend = () => {
         if (authState.user) {
-            Ver(authState.user.country, authState.user.phone)
+            Resend(authState.user.country, authState.user.phone)
                 .then((res) => {
                     dispatch(reset())
                     dispatch(counter())
