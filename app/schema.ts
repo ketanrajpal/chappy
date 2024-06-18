@@ -4,6 +4,7 @@ import { z } from 'zod'
 export type State = {
     success: boolean
     error: boolean
+    serverError: boolean
     user: User | undefined
     counter: number
     username?: string
@@ -30,5 +31,6 @@ export const initialState: State = {
     success: false,
     user: undefined,
     error: false,
+    serverError: false,
     counter: 0,
 }

@@ -4,6 +4,7 @@ import { z } from 'zod'
 export type ChatState = {
     success: boolean
     error: boolean
+    serverError: boolean
     chat: Chat[] | undefined
 }
 
@@ -14,6 +15,7 @@ export const ChatSchema = z.object({
 
 export const initialChatState: ChatState = {
     success: false,
+    serverError: false,
     error: false,
     chat: undefined,
 }

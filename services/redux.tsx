@@ -2,6 +2,7 @@
 
 import { authReducer } from '@/store/auth'
 import { chatReducer } from '@/store/chat'
+import { messageReducer } from '@/store/message'
 import { timerReducer } from '@/store/timer'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { ReactNode, useRef } from 'react'
@@ -29,6 +30,7 @@ const persistedReducer = persistReducer(
         auth: authReducer,
         timer: timerReducer,
         chat: chatReducer,
+        message: messageReducer,
     })
 )
 

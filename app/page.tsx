@@ -5,7 +5,7 @@ import SelectCountry from '@/components/select-country/select-country'
 import './login.scss'
 import { useFormState } from 'react-dom'
 
-import { Login, Verify } from '@/app/action'
+import { Login, Ver, Verify } from '@/app/action'
 import { initialState } from './schema'
 import OTPInput from 'react-otp-input'
 import { useEffect, useState } from 'react'
@@ -17,6 +17,7 @@ import { counter, login, setUser } from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { reset, start } from '@/store/timer'
 import Button from '@/components/button/button'
+import useMessage from '@/hooks/message'
 
 export default function Home() {
     const authState = useAppSelector((state) => state.auth)
@@ -37,12 +38,8 @@ export default function Home() {
                     priority
                 />
                 <LoginForm />
-                {!authState.authenticated && authState.user && (
-                    <>
-                        <VerifyForm />
-                        <ResendButton />
-                    </>
-                )}
+
+                {authState.user && <VerifyForm />}
             </div>
         </div>
     )
@@ -52,6 +49,7 @@ function LoginForm() {
     const [state, formAction] = useFormState(Login, initialState)
     const authState = useAppSelector((state) => state.auth)
     const dispatch = useAppDispatch()
+    const message = useMessage()
 
     useEffect(() => {
         if (state.success) {
@@ -60,29 +58,35 @@ function LoginForm() {
         }
     }, [state.success, dispatch, state.user])
 
+    useEffect(() => {
+        if (state.serverError) {
+            message.set({
+                type: 'error',
+                description: 'A server error occurred. Please try again later.',
+            })
+        }
+    }, [state.serverError, message])
+
     return (
-        <div className={`login ${state.error ? 'error' : ''}`}>
-            <form action={formAction} autoComplete="off">
-                <div className="container">
-                    <SelectCountry
-                        disabled={!!authState.user}
-                        value={authState.user?.country}
-                    />
-                    <input
-                        type="text"
-                        name="phone"
-                        placeholder="Phone number"
-                        disabled={!!authState.user}
-                        value={authState.user?.phone}
-                    />
-                </div>
-                <div className="button">
-                    {!authState.authenticated && !authState.user && (
-                        <Button label="Login" />
-                    )}
-                </div>
-            </form>
-        </div>
+        <form action={formAction} autoComplete="off">
+            <div className={`country-phone ${state.error ? 'error' : ''}`}>
+                <SelectCountry
+                    disabled={!!authState.user}
+                    value={authState.user?.country}
+                />
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Phone number"
+                    disabled={!!authState.user}
+                    value={authState.user?.phone}
+                />
+            </div>
+
+            {!authState.authenticated && !authState.user && (
+                <Button label="Login" />
+            )}
+        </form>
     )
 }
 
@@ -91,42 +95,42 @@ function VerifyForm() {
     const [state, formAction] = useFormState(Verify, initialState)
     const dispatch = useAppDispatch()
     const appState = useAppSelector((state) => state.auth)
+    const router = useRouter()
 
     useEffect(() => {
-        if (state.success && state.username)
+        if (state.success && state.username) {
             dispatch(login({ user: state.user, username: state.username }))
-    }, [state.success, dispatch, state.user, state.username])
+            router.push('/c')
+        }
+    }, [state.success, dispatch, state.user, state.username, router])
 
     if (appState.user) {
         return (
-            <div className={`verify ${state.error ? 'error' : ''}`}>
-                <form action={formAction} autoComplete="off">
-                    <input
-                        type="hidden"
-                        name="country"
-                        value={JSON.stringify(appState.user.country)}
+            <form action={formAction} autoComplete="off">
+                <input
+                    type="hidden"
+                    name="country"
+                    value={JSON.stringify(appState.user.country)}
+                />
+                <input type="hidden" name="phone" value={appState.user.phone} />
+                <input type="hidden" name="otp" value={otp} />
+                <div className={`otp-container ${state.error ? 'error' : ''}`}>
+                    <OTPInput
+                        value={otp}
+                        onChange={setOtp}
+                        numInputs={6}
+                        renderInput={(props) => <input {...props} />}
+                        containerStyle="otp"
+                        placeholder={'••••••'}
                     />
-                    <input
-                        type="hidden"
-                        name="phone"
-                        value={appState.user.phone}
-                    />
-                    <input type="hidden" name="otp" value={otp} />
-                    <div className="container">
-                        <OTPInput
-                            value={otp}
-                            onChange={setOtp}
-                            numInputs={6}
-                            renderInput={(props) => <input {...props} />}
-                            containerStyle="otp"
-                            placeholder={'••••••'}
-                        />
+                </div>
+                {!state.success && (
+                    <div className="buttons">
+                        <Button label="Verify" />
+                        <ResendButton />
                     </div>
-                    <div className="button">
-                        {!state.success && <Button label="Verify" />}
-                    </div>
-                </form>
-            </div>
+                )}
+            </form>
         )
     }
 }
@@ -135,7 +139,6 @@ function ResendButton() {
     const timerState = useAppSelector((state) => state.timer)
     const authState = useAppSelector((state) => state.auth)
     const dispatch = useAppDispatch()
-    const [state, formAction] = useFormState(Login, initialState)
 
     useEffect(() => {
         timerState.duration > 0 &&
@@ -145,55 +148,33 @@ function ResendButton() {
             )
     }, [timerState.duration, dispatch])
 
-    useEffect(() => {
-        if (state.counter < 5) {
-            dispatch(reset())
-            dispatch(counter())
+    const handleResend = () => {
+        if (authState.user) {
+            Ver(authState.user.country, authState.user.phone)
+                .then((res) => {
+                    dispatch(reset())
+                    dispatch(counter())
+                })
+                .catch(() => {})
         }
-    }, [dispatch, state.counter])
+    }
 
     if (authState.user) {
-        return (
-            <div className={`resend ${state.error ? 'error' : ''}`}>
-                {authState.counter >= 5 ? (
-                    <button className="resend">
-                        Maximum number of OTP attempts reached. Try again later.
-                    </button>
-                ) : (
-                    <form action={formAction} autoComplete="off">
-                        <input
-                            type="hidden"
-                            name="country"
-                            value={JSON.stringify(authState.user.country)}
-                        />
-                        <input
-                            type="hidden"
-                            name="phone"
-                            value={authState.user.phone}
-                        />
-                        <button
-                            type="submit"
-                            className={`resend ${
-                                timerState.duration <= 0 && 'active'
-                            }`}
-                            disabled={timerState.duration !== 0}
-                        >
-                            Don&apos;t receive the code?{' '}
-                            <span>
-                                Resend
-                                {timerState.duration <= 0 ? (
-                                    <> OTP</>
-                                ) : (
-                                    <>
-                                        {' '}
-                                        in {timerState.duration / 1000} seconds
-                                    </>
-                                )}
-                            </span>
-                        </button>
-                    </form>
-                )}
-            </div>
+        return authState.counter >= 5 ? (
+            <button className="resend" disabled>
+                OTP limit reached
+            </button>
+        ) : (
+            <button
+                className="resend"
+                type="button"
+                onClick={() => handleResend()}
+                disabled={timerState.duration > 0}
+            >
+                {timerState.duration <= 0
+                    ? 'Resend OTP'
+                    : `Resend in ${timerState.duration / 1000}s`}
+            </button>
         )
     }
 }

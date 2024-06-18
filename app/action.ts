@@ -22,14 +22,22 @@ export async function Login(
     }
 
     const phoneNumber = `${country.phone}${phone}`
-    const verify = await client.verify.v2
-        .services(process.env.REACT_APP_SERVICE_SID as string)
-        .verifications.create({ to: phoneNumber, channel: 'sms' })
 
-    if (verify.status !== 'pending') {
+    try {
+        const verify = await client.verify.v2
+            .services(process.env.REACT_APP_SERVICE_SID as string)
+            .verifications.create({ to: phoneNumber, channel: 'sms' })
+
+        if (verify.status !== 'pending') {
+            return {
+                ...previousState,
+                error: true,
+            }
+        }
+    } catch (error) {
         return {
             ...previousState,
-            error: true,
+            serverError: true,
         }
     }
 
@@ -40,7 +48,25 @@ export async function Login(
             phone,
         },
         error: false,
+        serverError: false,
         counter: previousState.counter + 1,
+    }
+}
+
+export async function Ver(country: Country, phone: string) {
+    const phoneNumber = `${country.phone}${phone}`
+    try {
+        const verify = await client.verify.v2
+            .services(process.env.REACT_APP_SERVICE_SID as string)
+            .verifications.create({ to: phoneNumber, channel: 'sms' })
+
+        if (verify.status !== 'pending') {
+            throw new Error('Invalid phone number')
+        }
+
+        return true
+    } catch (error) {
+        throw new Error('Server Error')
     }
 }
 
@@ -63,14 +89,25 @@ export async function Verify(
     }
 
     const phoneNumber = `${country.phone}${phone}`
-    const verification = await client.verify.v2
-        .services(process.env.REACT_APP_SERVICE_SID as string)
-        .verificationChecks.create({ to: phoneNumber, code: otp })
+    let username = undefined
 
-    if (verification.status !== 'approved') {
+    try {
+        const verification = await client.verify.v2
+            .services(process.env.REACT_APP_SERVICE_SID as string)
+            .verificationChecks.create({ to: phoneNumber, code: otp })
+
+        if (verification.status !== 'approved') {
+            return {
+                ...previousState,
+                error: true,
+            }
+        }
+
+        username = verification.to.split('+')[1]
+    } catch (error) {
         return {
             ...previousState,
-            error: true,
+            serverError: true,
         }
     }
 
@@ -80,8 +117,9 @@ export async function Verify(
             country: country,
             phone: phone,
         },
+        serverError: false,
         error: false,
         counter: previousState.counter,
-        username: verification.to.split('+')[1],
+        username: username,
     }
 }

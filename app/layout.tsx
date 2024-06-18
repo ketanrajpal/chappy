@@ -4,6 +4,7 @@ import 'normalize.css/normalize.css'
 import '@/styles/default.scss'
 
 import StoreProvider from '@/services/redux'
+import Message from '@/components/message/message'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -20,7 +21,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <StoreProvider>{children}</StoreProvider>
+                <StoreProvider>
+                    {children}
+                    <Message />
+                </StoreProvider>
             </body>
         </html>
     )

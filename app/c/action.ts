@@ -84,6 +84,7 @@ export async function create(
     return {
         success: true,
         error: false,
+        serverError: false,
         chat: chatData,
     }
 }
