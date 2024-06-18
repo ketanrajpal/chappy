@@ -1,6 +1,6 @@
 'use client'
 
-import Logo from '@/assets/logo.png'
+import Logo from '@/assets/logo.svg'
 import Image from 'next/image'
 
 import './header.scss'
@@ -18,7 +18,7 @@ export default function Header() {
                     src={Logo}
                     alt="Logo"
                     className="logo"
-                    width={200}
+                    width={220}
                     priority
                 />
             </div>

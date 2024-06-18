@@ -10,7 +10,7 @@ import { initialState } from './schema'
 import OTPInput from 'react-otp-input'
 import { useEffect, useState } from 'react'
 
-import Logo from '@/assets/logo.png'
+import Logo from '@/assets/logo.svg'
 import Image from 'next/image'
 import { useAppDispatch, useAppSelector } from '@/services/redux'
 import { counter, login, setUser } from '@/store/auth'
@@ -34,7 +34,7 @@ export default function Home() {
                     src={Logo}
                     alt="Logo"
                     className="logo"
-                    width={250}
+                    width={300}
                     priority
                 />
                 <LoginForm />
