@@ -1,7 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import 'normalize.css/normalize.css'
-import '@/styles/default.scss'
+import '@/styles/import.css'
+import '@/styles/reset.scss'
 
 import StoreProvider from '@/services/redux'
 import Message from '@/components/message/message'
