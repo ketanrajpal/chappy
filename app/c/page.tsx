@@ -30,7 +30,13 @@ export default function Page() {
     useEffect(() => {
         if (chatState.chats.length > chatLength) {
             setChatLength(chatState.chats.length)
-            handleScroll()
+            if (ref.current) {
+                ref.current.scrollTo({
+                    top: ref.current.scrollHeight,
+                    behavior: 'smooth',
+                })
+                //ref.current.scrollTop = ref.current.scrollHeight
+            }
         }
     }, [chatState.chats, chatLength])
 
@@ -45,17 +51,14 @@ export default function Page() {
             })
             .finally(() => {
                 setLoading(false)
-                handleScroll()
+                if (ref.current) {
+                    ref.current.scrollTo({
+                        top: ref.current.scrollHeight,
+                    })
+                    //ref.current.scrollTop = ref.current.scrollHeight
+                }
             })
     }, [authState.username, dispatch])
-
-    const handleScroll = () => {
-        if (ref.current) {
-            ref.current.scroll({
-                top: ref.current.scrollHeight,
-            })
-        }
-    }
 
     return loading ? (
         <Loader />

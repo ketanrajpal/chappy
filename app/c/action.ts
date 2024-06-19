@@ -47,6 +47,9 @@ export async function create(
     const allChats = await chats({ username: user })
     const text = await generateReply(allChats, part)
 
+    //await new Promise((resolve) => setTimeout(resolve, 100000))
+    //const text = 'Hello'
+
     const col = await collection()
     const userChat: Pick<Chat, 'user' | 'part' | 'createdAt' | 'role'> = {
         user,
