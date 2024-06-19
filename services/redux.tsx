@@ -1,5 +1,6 @@
 'use client'
 
+import { speechReducer } from '@/store/speech'
 import { authReducer } from '@/store/auth'
 import { chatReducer } from '@/store/chat'
 import { messageReducer } from '@/store/message'
@@ -31,6 +32,7 @@ const persistedReducer = persistReducer(
         timer: timerReducer,
         chat: chatReducer,
         message: messageReducer,
+        speech: speechReducer,
     })
 )
 

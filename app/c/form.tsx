@@ -4,17 +4,20 @@ import { useFormState } from 'react-dom'
 import { create } from './action'
 import { initialChatState } from './schema'
 import { useAppDispatch, useAppSelector } from '@/services/redux'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createChat } from '@/store/chat'
 import Button from '@/components/button/button'
 import { setMessage } from '@/store/message'
+import speak from '@/services/polly'
 
 export default function ChatForm() {
     const [state, formAction] = useFormState(create, initialChatState)
     const authState = useAppSelector((state) => state.auth)
     const chatState = useAppSelector((state) => state.chat)
+    const speechState = useAppSelector((state) => state.speech)
     const dispatch = useAppDispatch()
     const ref = useRef<HTMLFormElement>(null)
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         if (state.serverError) {
@@ -30,12 +33,30 @@ export default function ChatForm() {
                 state.chat.forEach((chat) => {
                     if (!chatState.chats.find((c) => c._id === chat._id)) {
                         dispatch(createChat(chat))
+                        if (speechState.output) {
+                            setLoading(true)
+                            if (chat.role === 'model') {
+                                speak(chat.part).then((data) => {
+                                    const audio = new Audio(data)
+                                    audio.play()
+                                    audio.onended = () => {
+                                        setLoading(false)
+                                    }
+                                })
+                            }
+                        }
                     }
                 })
             }
             ref.current?.reset()
         }
-    }, [state.success, dispatch, state.chat, chatState.chats])
+    }, [
+        state.success,
+        dispatch,
+        state.chat,
+        chatState.chats,
+        speechState.output,
+    ])
 
     return (
         <form
@@ -51,7 +72,8 @@ export default function ChatForm() {
                     placeholder="Type your message here"
                     name="part"
                 />
-                <Button label="Send" />
+
+                <Button label="Send" loading={loading} />
             </div>
         </form>
     )

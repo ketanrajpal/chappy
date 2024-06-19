@@ -98,10 +98,7 @@ function ChatBubble({ chat }: { readonly chat: Chat }) {
 
 function DeleteChat({ chat }: { readonly chat: Chat }) {
     const dispatch = useAppDispatch()
-    const chatState = useAppSelector((state) => state.chat)
-
     const handleDelete = () => {
-        console.table(chatState.chats)
         DeleteChatAction({ chat }).then((success) => {
             dispatch(deleteChat(chat._id))
             dispatch(

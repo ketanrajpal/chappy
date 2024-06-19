@@ -7,10 +7,12 @@ export default function Button({
     label,
     disabled = false,
     className = '',
+    loading = false,
 }: {
     readonly label: string
     readonly disabled?: boolean
     readonly className?: string
+    readonly loading?: boolean
 }) {
     const status = useFormStatus()
     return (
@@ -19,7 +21,7 @@ export default function Button({
             type="submit"
             disabled={status.pending || disabled}
         >
-            {status.pending ? (
+            {status.pending || loading ? (
                 <Image src={Loading} alt="Logo" height={50} />
             ) : (
                 label
