@@ -55,7 +55,7 @@ export default function Page() {
                     ref.current.scrollTo({
                         top: ref.current.scrollHeight,
                     })
-                    //ref.current.scrollTop = ref.current.scrollHeight
+                    ref.current.scrollTop = ref.current.scrollHeight
                 }
             })
     }, [authState.username, dispatch])
