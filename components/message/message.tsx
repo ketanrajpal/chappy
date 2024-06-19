@@ -14,7 +14,7 @@ export default function Message() {
         if (messageState.description && messageState.type) {
             setTimeout(() => {
                 dispatch(clearMessage())
-            }, 3000)
+            }, 5000)
         }
     }, [messageState, dispatch])
 
@@ -36,14 +36,14 @@ export default function Message() {
     return (
         messageState.type &&
         messageState.description && (
-            <div className="message">
-                <div className={`container ${messageState.type}`}>
-                    <span className="material-symbols-rounded">
-                        {messageType(messageState.type)}
-                    </span>
+            <div
+                className={`message ${messageState.type} animate__animated animate__bounceInRight`}
+            >
+                <span className="material-symbols-rounded">
+                    {messageType(messageState.type)}
+                </span>
 
-                    <p>{messageState.description}</p>
-                </div>
+                <p>{messageState.description}</p>
             </div>
         )
     )

@@ -45,7 +45,18 @@ export async function create(
     }
 
     const allChats = await chats({ username: user })
-    const text = await generateReply(allChats, part)
+
+    let text: string
+
+    try {
+        text = await generateReply(allChats, part)
+    } catch (error: any) {
+        return {
+            ...previousState,
+            error: true,
+            serverError: error.message,
+        }
+    }
 
     const col = await collection()
     const userChat: Pick<Chat, 'user' | 'part' | 'createdAt' | 'role'> = {
@@ -84,7 +95,7 @@ export async function create(
     return {
         success: true,
         error: false,
-        serverError: false,
+        serverError: undefined,
         chat: chatData,
     }
 }

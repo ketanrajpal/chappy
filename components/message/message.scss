@@ -2,40 +2,34 @@
 
 div.message {
     position: absolute;
-    margin-left: auto;
     z-index: 1000;
-    left: 0;
-    right: 0;
-    bottom: 3rem;
-    margin-right: auto;
-    max-width: 20rem;
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 1rem;
     align-items: center;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    max-width: 30rem;
 
-    div.container {
-        &.error {
-            background-color: #fdeded;
-            color: #d74544;
-        }
-        &.success {
-            background-color: #edf7ed;
-            color: #458946;
-        }
-        &.info {
-            background-color: #e5f6fd;
-            color: #2c93d6;
-        }
-        &.warning {
-            background-color: #fff4e5;
-            color: #ef7b2a;
-        }
+    right: 1.5rem;
+    top: 1.5rem;
 
-        display: inline-flex;
-        grid-template-columns: auto 1fr;
-        column-gap: 1rem;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        margin: auto;
-        border-radius: 0.5rem;
+    &.error {
+        background-color: #fdeded;
+        color: #d74544;
+    }
+    &.success {
+        background-color: #edf7ed;
+        color: #458946;
+    }
+    &.info {
+        background-color: #e5f6fd;
+        color: #2c93d6;
+    }
+    &.warning {
+        background-color: #fff4e5;
+        color: #ef7b2a;
     }
 }

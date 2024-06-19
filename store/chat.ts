@@ -9,9 +9,6 @@ export type Chat = {
     user: string
 }
 
-const firstChat =
-    'Hey there, fabulous human! 🎉 I’m Chappy, your friendly, quirky chat buddy. Got a question? Fire away! 🤔💬 Let’s make some magic happen! ✨🌈'
-
 export type ChatState = {
     chats: Chat[]
 }
@@ -26,13 +23,6 @@ export const ChatSlice = createSlice({
     reducers: {
         setChats: (state, action) => {
             state.chats = action.payload
-            state.chats.unshift({
-                _id: '0',
-                role: 'model',
-                part: firstChat,
-                user: action.payload[0].user,
-                createdAt: action.payload[0].createdAt,
-            })
         },
         createChat: (state, action) => {
             state.chats.push(action.payload)

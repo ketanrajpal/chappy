@@ -17,7 +17,7 @@ import { counter, login, setUser } from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { reset, start } from '@/store/timer'
 import Button from '@/components/button/button'
-import useMessage from '@/hooks/message'
+import { setMessage } from '@/store/message'
 
 export default function Home() {
     const authState = useAppSelector((state) => state.auth)
@@ -49,7 +49,6 @@ function LoginForm() {
     const [state, formAction] = useFormState(Login, initialState)
     const authState = useAppSelector((state) => state.auth)
     const dispatch = useAppDispatch()
-    const message = useMessage()
 
     useEffect(() => {
         if (state.success) {
@@ -60,12 +59,11 @@ function LoginForm() {
 
     useEffect(() => {
         if (state.serverError) {
-            message.set({
-                type: 'error',
-                description: 'Server error. Try again later.',
-            })
+            dispatch(
+                setMessage({ type: 'error', description: state.serverError })
+            )
         }
-    }, [state.serverError, message])
+    }, [state.serverError, dispatch])
 
     return (
         <form action={formAction} autoComplete="off">

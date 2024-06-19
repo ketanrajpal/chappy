@@ -28,6 +28,9 @@ const safetySettings = [
     },
 ]
 
+export const defaultChat =
+    'Hey there, fabulous human! 🎉 I am Chappy, your friendly, quirky chat buddy. Got a question? Fire away! 🤔💬 Lets make some magic happen! ✨🌈'
+
 export default async function generateReply(chat: Chat[], message: string) {
     const model = genAI.getGenerativeModel({
         model: 'gemini-1.5-flash',
@@ -38,7 +41,7 @@ export default async function generateReply(chat: Chat[], message: string) {
             role: 'user',
             parts: [
                 {
-                    text: `Hey there, fabulous human! 🎉 I am Chappy, your friendly, quirky chat buddy. Got a question? Fire away! 🤔💬 Lets make some magic happen! ✨🌈`,
+                    text: defaultChat,
                 },
             ],
         },

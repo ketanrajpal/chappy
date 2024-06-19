@@ -18,6 +18,7 @@ export async function Login(
         return {
             ...previousState,
             error: true,
+            serverError: undefined,
         }
     }
 
@@ -34,11 +35,10 @@ export async function Login(
                 error: true,
             }
         }
-    } catch (error) {
-        console.log(error)
+    } catch (error: any) {
         return {
             ...previousState,
-            serverError: true,
+            serverError: error.message,
         }
     }
 
@@ -49,7 +49,7 @@ export async function Login(
             phone,
         },
         error: false,
-        serverError: false,
+        serverError: undefined,
         counter: previousState.counter + 1,
     }
 }
@@ -66,9 +66,8 @@ export async function Resend(country: Country, phone: string) {
         }
 
         return true
-    } catch (error) {
-        console.log(error)
-        throw new Error('Server Error')
+    } catch (error: any) {
+        throw new Error(error.message)
     }
 }
 
@@ -87,6 +86,7 @@ export async function Verify(
         return {
             ...previousState,
             error: true,
+            serverError: undefined,
         }
     }
 
@@ -102,15 +102,15 @@ export async function Verify(
             return {
                 ...previousState,
                 error: true,
+                serverError: undefined,
             }
         }
 
         username = verification.to.split('+')[1]
-    } catch (error) {
-        console.log(error)
+    } catch (error: any) {
         return {
             ...previousState,
-            serverError: true,
+            serverError: error.message,
         }
     }
 
@@ -120,7 +120,7 @@ export async function Verify(
             country: country,
             phone: phone,
         },
-        serverError: false,
+        serverError: undefined,
         error: false,
         counter: previousState.counter,
         username: username,

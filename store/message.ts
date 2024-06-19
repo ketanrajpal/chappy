@@ -16,7 +16,10 @@ export const MessageSlice = createSlice({
             state.type = action.payload.type
             state.description = action.payload.description
         },
-        clearMessage: () => initialState,
+        clearMessage: (state) => {
+            state.type = undefined
+            state.description = undefined
+        },
     },
 })
 

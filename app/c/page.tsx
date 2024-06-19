@@ -9,6 +9,8 @@ import { Chat, deleteChat, setChats } from '@/store/chat'
 
 import Loading from '@/assets/loader.svg'
 import Image from 'next/image'
+import { defaultChat } from '@/services/google'
+import { setMessage } from '@/store/message'
 
 export default function Page() {
     const authState = useAppSelector((state) => state.auth)
@@ -35,7 +37,6 @@ export default function Page() {
                     top: ref.current.scrollHeight,
                     behavior: 'smooth',
                 })
-                //ref.current.scrollTop = ref.current.scrollHeight
             }
         }
     }, [chatState.chats, chatLength])
@@ -65,6 +66,10 @@ export default function Page() {
     ) : (
         <div className="chat-content" ref={ref}>
             <div className="chats">
+                <div className="chat model">
+                    <div className="description">{defaultChat}</div>
+                    <nav></nav>
+                </div>
                 {chatState.chats.map((chat) => (
                     <ChatBubble key={chat._id} chat={chat} />
                 ))}
@@ -98,8 +103,13 @@ function DeleteChat({ chat }: { readonly chat: Chat }) {
     const handleDelete = () => {
         console.table(chatState.chats)
         DeleteChatAction({ chat }).then((success) => {
-            console.log(success)
             dispatch(deleteChat(chat._id))
+            dispatch(
+                setMessage({
+                    type: 'success',
+                    description: 'Message successfully deleted',
+                })
+            )
         })
     }
 

@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '@/services/redux'
 import { useEffect, useRef } from 'react'
 import { createChat } from '@/store/chat'
 import Button from '@/components/button/button'
+import { setMessage } from '@/store/message'
 
 export default function ChatForm() {
     const [state, formAction] = useFormState(create, initialChatState)
@@ -14,6 +15,14 @@ export default function ChatForm() {
     const chatState = useAppSelector((state) => state.chat)
     const dispatch = useAppDispatch()
     const ref = useRef<HTMLFormElement>(null)
+
+    useEffect(() => {
+        if (state.serverError) {
+            dispatch(
+                setMessage({ description: state.serverError, type: 'error' })
+            )
+        }
+    }, [state.serverError, dispatch])
 
     useEffect(() => {
         if (state.success) {
