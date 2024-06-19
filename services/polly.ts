@@ -22,8 +22,8 @@ export default async function speak(text: string): Promise<string> {
         OutputFormat: 'mp3',
         Text: text,
         TextType: 'ssml',
-        VoiceId: 'Amy',
-        LanguageCode: 'en-GB',
+        VoiceId: 'Joanna',
+        LanguageCode: 'en-US',
         SampleRate: '22050',
     })
 
