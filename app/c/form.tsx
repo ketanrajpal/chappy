@@ -69,6 +69,14 @@ export function ChatForm() {
         if (transcript) setText(transcript)
     }, [transcript])
 
+    useEffect(() => {
+        if (!listening && text) {
+            if (ref) {
+                ref.current?.requestSubmit()
+            }
+        }
+    }, [listening, text])
+
     return (
         <form
             action={formAction}
