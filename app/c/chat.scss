@@ -105,7 +105,7 @@ body {
         div.container {
             height: 3.5rem;
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr auto auto;
             padding: 0.5rem;
 
             input {
@@ -119,6 +119,22 @@ body {
                 }
                 &::placeholder {
                     color: map-get($color, 'input');
+                }
+            }
+
+            button.record {
+                background-color: transparent;
+                border: none;
+                color: map-get($color, 'error');
+                cursor: pointer;
+                transition: all 0.2s ease-in;
+                padding: 0 1rem;
+                span {
+                    font-size: 1.5rem;
+                }
+
+                &:hover {
+                    color: map-get($color, 'error');
                 }
             }
 

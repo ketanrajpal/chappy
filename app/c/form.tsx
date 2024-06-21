@@ -9,8 +9,12 @@ import { createChat } from '@/store/chat'
 import Button from '@/components/button/button'
 import { setMessage } from '@/store/message'
 import speak from '@/services/polly'
+import 'regenerator-runtime/runtime'
+import SpeechRecognition, {
+    useSpeechRecognition,
+} from 'react-speech-recognition'
 
-export default function ChatForm() {
+export function ChatForm() {
     const [state, formAction] = useFormState(create, initialChatState)
     const authState = useAppSelector((state) => state.auth)
     const chatState = useAppSelector((state) => state.chat)
@@ -18,6 +22,9 @@ export default function ChatForm() {
     const dispatch = useAppDispatch()
     const ref = useRef<HTMLFormElement>(null)
     const [loading, setLoading] = useState(false)
+    const { transcript, listening } = useSpeechRecognition()
+
+    const [text, setText] = useState('')
 
     useEffect(() => {
         if (state.serverError) {
@@ -58,6 +65,10 @@ export default function ChatForm() {
         speechState.output,
     ])
 
+    useEffect(() => {
+        if (transcript) setText(transcript)
+    }, [transcript])
+
     return (
         <form
             action={formAction}
@@ -71,8 +82,18 @@ export default function ChatForm() {
                     type="text"
                     placeholder="Type your message here"
                     name="part"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
                 />
-
+                <button
+                    className="record"
+                    type="button"
+                    onClick={() => SpeechRecognition.startListening()}
+                >
+                    <span className="material-symbols-rounded icon">
+                        {listening ? 'radio_button_checked' : 'mic'}
+                    </span>
+                </button>
                 <Button label="Send" loading={loading} />
             </div>
         </form>

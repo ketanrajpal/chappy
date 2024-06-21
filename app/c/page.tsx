@@ -15,6 +15,7 @@ import { setMessage } from '@/store/message'
 export default function Page() {
     const authState = useAppSelector((state) => state.auth)
     const chatState = useAppSelector((state) => state.chat)
+    const speechState = useAppSelector((state) => state.speech)
     const dispatch = useAppDispatch()
     const router = useRouter()
     const ref = useRef<HTMLDivElement>(null)

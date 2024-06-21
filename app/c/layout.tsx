@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import './chat.scss'
 import Header from '@/components/header/header'
-import ChatForm from './form'
+import { ChatForm } from './form'
 
 export const metadata: Metadata = {
     title: 'Chat with Chappy',
