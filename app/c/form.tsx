@@ -25,7 +25,7 @@ export function ChatForm() {
     const { transcript, listening } = useSpeechRecognition()
 
     const [text, setText] = useState('')
-
+    const [speaking, setSpeaking] = useState(false)
     useEffect(() => {
         if (state.serverError) {
             dispatch(
@@ -70,12 +70,13 @@ export function ChatForm() {
     }, [transcript])
 
     useEffect(() => {
-        if (!listening && text) {
+        if (!listening && text && speaking) {
             if (ref) {
                 ref.current?.requestSubmit()
+                setSpeaking(false)
             }
         }
-    }, [listening, text])
+    }, [listening, text, speaking])
 
     return (
         <form
@@ -96,7 +97,10 @@ export function ChatForm() {
                 <button
                     className="record"
                     type="button"
-                    onClick={() => SpeechRecognition.startListening()}
+                    onClick={() => {
+                        SpeechRecognition.startListening()
+                        setSpeaking(true)
+                    }}
                 >
                     <span className="material-symbols-rounded icon">
                         {listening ? 'radio_button_checked' : 'mic'}

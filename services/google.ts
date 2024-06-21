@@ -29,7 +29,7 @@ const safetySettings = [
 ]
 
 export const defaultChat =
-    'Hey there, fabulous human! 🎉 I am Chappy, your friendly, quirky chat buddy. Got a question? Fire away! 🤔💬 Lets make some magic happen! ✨🌈'
+    'Hey there! 🎉 I am Chappy, your friendly, chat buddy. Got a question? Fire away! 🤔💬 Lets make some magic happen! ✨🌈'
 
 export default async function generateReply(chat: Chat[], message: string) {
     const model = genAI.getGenerativeModel({
@@ -67,7 +67,7 @@ export default async function generateReply(chat: Chat[], message: string) {
         },
     })
 
-    const msg = `${message}. Answer in 50 words in UK English. Also add relevant emojis and be creative and quirky`
+    const msg = `${message}. Answer in 50 words in UK English. Also add relevant emojis and be creative and engaging.`
 
     const result = await modelChat.sendMessage(msg)
     const response = result.response

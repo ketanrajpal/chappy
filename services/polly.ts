@@ -16,13 +16,13 @@ const params = {
 
 export default async function speak(text: string): Promise<string> {
     text = text.replace(/[^a-zA-Z0-9.!?, ]/g, '') // remove special characters
-    text = `<speak><prosody rate="medium">${text}</prosody></speak>`
+    text = `<speak><prosody rate="fast">${text}</prosody></speak>`
     const command = new SynthesizeSpeechCommand({
         Engine: 'neural',
         OutputFormat: 'mp3',
         Text: text,
         TextType: 'ssml',
-        VoiceId: 'Joanna',
+        VoiceId: 'Ruth',
         LanguageCode: 'en-US',
         SampleRate: '22050',
     })
