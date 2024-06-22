@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
         reply =
             'Oopsie-daisy! Looks like our system had a little hiccup. If you sent a file, We only accept images for now.'
     } else {
-        if (data.MediaUrl0 !== undefined) {
+        if (data.MediaUrl0 === undefined || data.Body !== '') {
             await col.insertOne({
                 user: data.WaId,
                 part: data.Body,
