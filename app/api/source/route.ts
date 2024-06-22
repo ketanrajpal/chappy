@@ -1,5 +1,6 @@
 import { chats } from '@/app/c/action'
 import generateReply, { extractDocumentContent } from '@/services/google'
+import { mediaToBase64 } from '@/services/media'
 import { collection } from '@/services/mongo'
 import { client } from '@/services/twilio'
 import { NextRequest, NextResponse } from 'next/server'
@@ -30,14 +31,10 @@ export async function POST(req: NextRequest) {
     let query = data.Body
 
     if (data.MediaUrl0 !== undefined) {
-        const response = await fetch(data.MediaUrl0)
-        const responseData = await response.blob()
+        const media = await mediaToBase64(data.MediaUrl0)
 
         try {
-            const content = await extractDocumentContent(
-                response.url,
-                responseData.type
-            )
+            const content = await extractDocumentContent(media)
             console.log(content)
             await col.insertOne({
                 user: data.WaId,
