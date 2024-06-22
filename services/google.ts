@@ -53,6 +53,8 @@ export default async function generateReply(chat: Chat[], message: string) {
         },
     ]
 
+    chat = chat.slice(-20)
+
     chat.forEach((c) => {
         chat_history.push({
             role: c.role,
