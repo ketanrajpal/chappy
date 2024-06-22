@@ -34,6 +34,19 @@ body {
                 border-radius: 0.5rem;
                 align-items: center;
 
+                div.image {
+                    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+
+                    overflow: hidden;
+                    margin-right: 1rem;
+
+                    img {
+                        border-radius: 0.3rem;
+                        width: 100%;
+                        border: 1px solid map-get($color, 'tertiary');
+                    }
+                }
+
                 div.description {
                     color: map-get($color, 'input');
                     border-radius: 0.3rem;

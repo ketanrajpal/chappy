@@ -11,6 +11,7 @@ import Loading from '@/assets/loader.svg'
 import Image from 'next/image'
 import { defaultChat } from '@/services/google'
 import { setMessage } from '@/store/message'
+import Link from 'next/link'
 
 export default function Page() {
     const authState = useAppSelector((state) => state.auth)
@@ -85,13 +86,19 @@ function ChatBubble({ chat }: { readonly chat: Chat }) {
             <nav>
                 <DeleteChat chat={chat} />
             </nav>
-            <div className="description">
-                <Image
-                    src={chat.documentUrl}
-                    alt="Document"
-                    width={100}
-                    height={100}
-                />
+            <div className="image">
+                <Link href={chat.documentUrl} target="_new">
+                    <Image
+                        src={chat.documentUrl}
+                        alt="Document"
+                        width={300}
+                        height={300}
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                        }}
+                    />
+                </Link>
             </div>
         </div>
     ) : chat.role === 'user' ? (
