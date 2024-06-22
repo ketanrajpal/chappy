@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
                     createdAt: new Date(),
                     role: 'user',
                     document: true,
+                    documentUrl: media.url,
                 })
                 query = 'Summarise the content'
             } catch (err: any) {

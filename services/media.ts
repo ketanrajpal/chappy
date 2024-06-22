@@ -6,6 +6,7 @@ export type Media = {
         }
     }
     type: string
+    url: string
 }
 
 export async function mediaToBase64(mediaUrl: string): Promise<Media> {
@@ -25,5 +26,6 @@ export async function mediaToBase64(mediaUrl: string): Promise<Media> {
             },
         },
         type: responseData.type,
+        url: response.url,
     }
 }
