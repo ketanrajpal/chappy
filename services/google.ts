@@ -4,12 +4,13 @@ import {
     HarmBlockThreshold,
     HarmCategory,
 } from '@google/generative-ai'
+import { MediaFile } from './media'
 
-const genAI = new GoogleGenerativeAI(
+export const genAI = new GoogleGenerativeAI(
     process.env.REACT_APP_GEMINI_API_KEY as string
 )
 
-const safetySettings = [
+export const safetySettings = [
     {
         category: HarmCategory.HARM_CATEGORY_HARASSMENT,
         threshold: HarmBlockThreshold.BLOCK_NONE,
@@ -70,6 +71,28 @@ export default async function generateReply(chat: Chat[], message: string) {
     const msg = `${message}. Answer in 50 words in UK English. Also add relevant emojis and be creative and engaging.`
 
     const result = await modelChat.sendMessage(msg)
+    const response = result.response
+    const text = response.text()
+
+    return text
+}
+
+export async function extractDocumentContent(media: MediaFile) {
+    const model = genAI.getGenerativeModel({
+        model: 'gemini-1.5-flash',
+        safetySettings,
+    })
+
+    const result = await model.generateContent([
+        {
+            fileData: {
+                mimeType: media.type,
+                fileUri: media.url,
+            },
+        },
+        { text: 'Extract all the content from the document' },
+    ])
+
     const response = result.response
     const text = response.text()
 

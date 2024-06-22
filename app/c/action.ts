@@ -3,7 +3,7 @@
 import { collection } from '@/services/mongo'
 import { Chat } from '@/store/chat'
 import { ChatSchema, ChatState } from './schema'
-import generateReply, { defaultChat } from '@/services/google'
+import generateReply from '@/services/google'
 import { ObjectId } from 'mongodb'
 
 export async function chats({
