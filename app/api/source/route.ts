@@ -20,24 +20,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ message: 'Welcome to the API!' })
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
     let reply: string = ''
     let error: boolean = false
-    let content: string = ''
     const col = await collection()
 
-    const body = await request.text()
+    const body = await req.text()
     const data = parseQueryString(body)
+    let query = data.Body
 
     if (data.MediaUrl0 !== undefined) {
-        console.log(data.MediaUrl0)
         const response = await fetch(data.MediaUrl0)
         const responseData = await response.blob()
 
-        const type = responseData.type
-
         try {
-            const content = await extractDocumentContent(data.MediaUrl0, type)
+            const content = await extractDocumentContent(
+                response.url,
+                responseData.type
+            )
             console.log(content)
             await col.insertOne({
                 user: data.WaId,
@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
                 createdAt: new Date(),
                 role: 'document',
             })
+            query = 'Summarise the content'
         } catch (err: any) {
             console.error(err)
             error = true
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
         const allChats = await chats({ username: data.WaId })
 
         try {
-            reply = await generateReply(allChats, data.Body)
+            reply = await generateReply(allChats, query)
         } catch (err: any) {
             console.error(err)
             error = true
