@@ -71,6 +71,7 @@ export async function create(
         part: userChat.part,
         createdAt: userChat.createdAt,
         role: userChat.role,
+        document: false,
     })
 
     const modelChat: Pick<Chat, 'user' | 'part' | 'createdAt' | 'role'> = {
@@ -85,6 +86,7 @@ export async function create(
         part: modelChat.part,
         createdAt: modelChat.createdAt,
         role: modelChat.role,
+        document: false,
     })
 
     const chatData: Chat[] = [

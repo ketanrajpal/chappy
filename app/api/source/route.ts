@@ -33,19 +33,29 @@ export async function POST(req: NextRequest) {
     if (data.MediaUrl0 !== undefined) {
         const media = await mediaToBase64(data.MediaUrl0)
 
-        try {
-            const content = await extractDocumentContent(media)
-            console.log(content)
-            await col.insertOne({
-                user: data.WaId,
-                part: content,
-                createdAt: new Date(),
-                role: 'document',
-            })
-            query = 'Summarise the content'
-        } catch (err: any) {
-            console.error(err)
+        // if media not an image error
+        if (media.type !== 'image/jpeg' && media.type !== 'image/png') {
+            reply =
+                'Oopsie-daisy! Looks like we only support images for now. Can you try sending an image instead? 🌟'
+
             error = true
+        }
+
+        if (error === false) {
+            try {
+                const content = await extractDocumentContent(media)
+                await col.insertOne({
+                    user: data.WaId,
+                    part: content,
+                    createdAt: new Date(),
+                    role: 'user',
+                    document: true,
+                })
+                query = 'Summarise the content'
+            } catch (err: any) {
+                console.error(err)
+                error = true
+            }
         }
     }
 
@@ -69,6 +79,7 @@ export async function POST(req: NextRequest) {
             part: data.Body,
             createdAt: new Date(),
             role: 'user',
+            document: false,
         })
 
         await col.insertOne({
@@ -76,6 +87,7 @@ export async function POST(req: NextRequest) {
             part: reply,
             createdAt: new Date(),
             role: 'model',
+            document: false,
         })
     }
 
