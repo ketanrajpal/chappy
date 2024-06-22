@@ -85,7 +85,7 @@ export async function extractDocumentContent(media: Media) {
     })
 
     const result = await model.generateContent([
-        'Extract all the content from the image',
+        'Extract all the content from the image. Include all the text and any other relevant information. Also if there is no text, then describe the image.',
         media.media,
     ])
 
