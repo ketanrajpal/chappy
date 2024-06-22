@@ -87,7 +87,7 @@ export async function extractDocumentContent(media: MediaFile) {
         {
             fileData: {
                 mimeType: media.type,
-                fileUri: media.url,
+                fileUri: media.media,
             },
         },
         { text: 'Extract all the content from the document' },
