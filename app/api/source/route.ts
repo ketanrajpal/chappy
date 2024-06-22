@@ -3,7 +3,6 @@ import generateReply, { extractDocumentContent } from '@/services/google'
 import { collection } from '@/services/mongo'
 import { client } from '@/services/twilio'
 import { NextRequest, NextResponse } from 'next/server'
-import { readMedia } from '@/services/media'
 
 function parseQueryString(queryString: string) {
     return queryString
@@ -31,23 +30,24 @@ export async function POST(request: NextRequest) {
     const data = parseQueryString(body)
 
     if (data.MediaUrl0 !== undefined) {
-        const media = await readMedia(data.MediaUrl0)
-        if (media === null) {
+        console.log(data.MediaUrl0)
+        const response = await fetch(data.MediaUrl0)
+        const responseData = await response.blob()
+
+        const type = responseData.type
+
+        try {
+            const content = await extractDocumentContent(data.MediaUrl0, type)
+            console.log(content)
+            await col.insertOne({
+                user: data.WaId,
+                part: content,
+                createdAt: new Date(),
+                role: 'document',
+            })
+        } catch (err: any) {
+            console.error(err)
             error = true
-        } else {
-            try {
-                content = await extractDocumentContent(media)
-                console.log(content)
-                await col.insertOne({
-                    user: data.WaId,
-                    part: content,
-                    createdAt: new Date(),
-                    role: 'document',
-                })
-            } catch (err: any) {
-                console.error(err)
-                error = true
-            }
         }
     }
 
