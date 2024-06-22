@@ -33,11 +33,12 @@ export async function POST(req: NextRequest) {
     if (data.MediaUrl0 !== undefined) {
         const media = await mediaToBase64(data.MediaUrl0)
 
-        // if media not an image error
-        if (media.type !== 'image/jpeg' && media.type !== 'image/png') {
-            reply =
-                'Oopsie-daisy! Looks like we only support images for now. Can you try sending an image instead? 🌟'
-
+        if (
+            media.type !== 'image/jpeg' &&
+            media.type !== 'image/png' &&
+            media.type !== 'image/jpg' &&
+            media.type !== 'image/gif'
+        ) {
             error = true
         }
 
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     if (error) {
         reply =
-            'Oopsie-daisy! Looks like our system had a little hiccup. Can you give it another whirl? 🌟'
+            'Oopsie-daisy! Looks like our system had a little hiccup. If you sent a file, We only accept images for now.'
     } else {
         await col.insertOne({
             user: data.WaId,
