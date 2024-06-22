@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
 
     if (data.MediaUrl0 !== undefined) {
         const media = await readMedia(data.MediaUrl0)
+        console.log(media)
         if (media === null) {
             error = true
         } else {

@@ -1,5 +1,6 @@
 import { fileTypeFromStream } from 'file-type'
 import got from 'got'
+import { GoogleAIFileManager } from '@google/generative-ai/files'
 
 export type MediaFile = {
     media: string
@@ -13,20 +14,17 @@ export async function readMedia(mediaUrl: string): Promise<MediaFile | null> {
         return null
     }
 
-    const media = await new Promise<string>((resolve, reject) => {
-        let data = ''
-        response.on('data', (chunk) => {
-            data += chunk
-        })
-        response.on('end', () => {
-            resolve(
-                `data:${fileType.mime};base64,${Buffer.from(data).toString(
-                    'base64'
-                )}`
-            )
-        })
-        response.on('error', reject)
+    return { media: mediaUrl, type: fileType?.mime }
+}
+
+export async function uploadMedia(media: MediaFile) {
+    const fileManager = new GoogleAIFileManager(
+        process.env.REACT_APP_GEMINI_API_KEY as string
+    )
+
+    const uploadResult = await fileManager.uploadFile(media.media, {
+        mimeType: media.type,
     })
 
-    return { media: media, type: fileType?.mime }
+    return { media: uploadResult.file.uri, type: media.type }
 }

@@ -4,7 +4,7 @@ import {
     HarmBlockThreshold,
     HarmCategory,
 } from '@google/generative-ai'
-import { MediaFile } from './media'
+import { MediaFile, uploadMedia } from './media'
 
 export const genAI = new GoogleGenerativeAI(
     process.env.REACT_APP_GEMINI_API_KEY as string
@@ -83,11 +83,13 @@ export async function extractDocumentContent(media: MediaFile) {
         safetySettings,
     })
 
+    const upload = await uploadMedia(media)
+
     const result = await model.generateContent([
         {
             fileData: {
                 mimeType: media.type,
-                fileUri: media.media,
+                fileUri: upload.media,
             },
         },
         { text: 'Extract all the content from the document' },
