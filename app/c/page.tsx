@@ -80,7 +80,21 @@ export default function Page() {
 }
 
 function ChatBubble({ chat }: { readonly chat: Chat }) {
-    return chat.role === 'user' ? (
+    return chat.document && chat.documentUrl ? (
+        <div className="chat user">
+            <nav>
+                <DeleteChat chat={chat} />
+            </nav>
+            <div className="description">
+                <Image
+                    src={chat.documentUrl}
+                    alt="Document"
+                    width={100}
+                    height={100}
+                />
+            </div>
+        </div>
+    ) : chat.role === 'user' ? (
         <div className="chat user">
             <nav>
                 <DeleteChat chat={chat} />

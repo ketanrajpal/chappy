@@ -7,6 +7,8 @@ export type Chat = {
     part: string
     createdAt: Date
     user: string
+    document: boolean
+    documentUrl?: string
 }
 
 export type ChatState = {

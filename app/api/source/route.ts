@@ -76,13 +76,15 @@ export async function POST(req: NextRequest) {
         reply =
             'Oopsie-daisy! Looks like our system had a little hiccup. If you sent a file, We only accept images for now.'
     } else {
-        await col.insertOne({
-            user: data.WaId,
-            part: data.Body,
-            createdAt: new Date(),
-            role: 'user',
-            document: false,
-        })
+        if (data.MediaUrl0 !== undefined) {
+            await col.insertOne({
+                user: data.WaId,
+                part: data.Body,
+                createdAt: new Date(),
+                role: 'user',
+                document: false,
+            })
+        }
 
         await col.insertOne({
             user: data.WaId,

@@ -59,11 +59,15 @@ export async function create(
     }
 
     const col = await collection()
-    const userChat: Pick<Chat, 'user' | 'part' | 'createdAt' | 'role'> = {
+    const userChat: Pick<
+        Chat,
+        'user' | 'part' | 'createdAt' | 'role' | 'document'
+    > = {
         user,
         part,
         createdAt: new Date(),
         role: 'user',
+        document: false,
     }
 
     const userInsert = await col.insertOne({
@@ -74,11 +78,15 @@ export async function create(
         document: false,
     })
 
-    const modelChat: Pick<Chat, 'user' | 'part' | 'createdAt' | 'role'> = {
+    const modelChat: Pick<
+        Chat,
+        'user' | 'part' | 'createdAt' | 'role' | 'document'
+    > = {
         user,
         part: text,
         createdAt: new Date(),
         role: 'model',
+        document: false,
     }
 
     const modelInsert = await col.insertOne({
