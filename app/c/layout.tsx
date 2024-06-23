@@ -3,11 +3,11 @@ import type { Metadata } from 'next'
 import './chat.scss'
 import Header from '@/components/header/header'
 import { ChatForm } from './form'
+import { defaultChat } from '@/services/google'
 
 export const metadata: Metadata = {
     title: 'Chat with Chappy',
-    description:
-        'Hey there, fabulous human! I am Chappy, your friendly, quirky chat buddy. Got a question? Fire away! Let’s make some magic happen together!',
+    description: defaultChat,
 }
 
 export default function Layout({

@@ -1,7 +1,8 @@
 import { chats } from '@/app/c/action'
 import generateReply, { extractDocumentContent } from '@/services/google'
 import { mediaToBase64 } from '@/services/media'
-import { collection } from '@/services/mongo'
+import { insertChat } from '@/services/mongo'
+import { transcribe } from '@/services/transcribe'
 import { client } from '@/services/twilio'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -24,34 +25,57 @@ export async function GET(request: NextRequest) {
 export async function POST(req: NextRequest) {
     let reply: string = ''
     let error: boolean = false
-    const col = await collection()
 
     const body = await req.text()
     const data = parseQueryString(body)
     let query = data.Body
+    let type: 'text' | 'audio' | 'image' = 'text'
+
+    let content: string = ''
 
     if (data.MediaUrl0 !== undefined) {
+        console.log(data.MediaUrl0)
+
         const media = await mediaToBase64(data.MediaUrl0)
 
+        console.log(media)
+
         if (
-            media.type !== 'image/jpeg' &&
-            media.type !== 'image/png' &&
-            media.type !== 'image/jpg' &&
-            media.type !== 'image/gif'
+            [
+                'audio/ogg',
+                'audio/wav',
+                'audio/mpeg',
+                'audio/mp3',
+                'audio/mp4',
+                'audio/aac',
+                'audio/flac',
+                'audio/x-wav',
+            ].includes(media.type)
         ) {
+            const trans = await transcribe(media.url)
+            if (trans) {
+                content = trans
+                type = 'audio'
+            } else error = true
+        } else if (
+            ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(
+                media.type
+            )
+        ) {
+            content = await extractDocumentContent(media)
+            type = 'image'
+        } else {
             error = true
         }
 
         if (error === false) {
             try {
-                const content = await extractDocumentContent(media)
-                await col.insertOne({
+                await insertChat({
                     user: data.WaId,
                     part: content,
-                    createdAt: new Date(),
                     role: 'user',
-                    document: true,
-                    documentUrl: media.url,
+                    type: type,
+                    url: media.url,
                 })
                 query = 'Summarise the content'
             } catch (err: any) {
@@ -63,7 +87,6 @@ export async function POST(req: NextRequest) {
 
     if (error === false) {
         const allChats = await chats({ username: data.WaId })
-
         try {
             reply = await generateReply(allChats, query)
         } catch (err: any) {
@@ -77,21 +100,19 @@ export async function POST(req: NextRequest) {
             'Oopsie-daisy! Looks like our system had a little hiccup. If you sent a file, We only accept images for now.'
     } else {
         if (data.MediaUrl0 === undefined || data.Body !== '') {
-            await col.insertOne({
+            await insertChat({
                 user: data.WaId,
                 part: data.Body,
-                createdAt: new Date(),
                 role: 'user',
-                document: false,
+                type: 'text',
             })
         }
 
-        await col.insertOne({
+        await insertChat({
             user: data.WaId,
             part: reply,
-            createdAt: new Date(),
             role: 'model',
-            document: false,
+            type: 'text',
         })
     }
 

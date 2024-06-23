@@ -1,13 +1,12 @@
 'use server'
 
-import { collection } from '@/services/mongo'
+import { collection, insertChat, readChat } from '@/services/mongo'
 import { Chat } from '@/store/chat'
 import { ChatSchema, ChatState } from './schema'
 import generateReply, { extractDocumentContent } from '@/services/google'
 import { InsertOneResult, ObjectId } from 'mongodb'
 import { mediaToBase64Blob } from '@/services/media'
 import { client } from '@/services/twilio'
-import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message'
 
 export async function chats({
     username,
@@ -35,8 +34,6 @@ export async function create(
     previousState: ChatState,
     formData: FormData
 ): Promise<ChatState> {
-    const col = await collection()
-
     const user = formData.get('user') as string
     const part = formData.get('part') as string
 
@@ -63,47 +60,48 @@ export async function create(
         }
     }
 
-    const userChat: Pick<
-        Chat,
-        'user' | 'part' | 'createdAt' | 'role' | 'document'
-    > = {
+    const userInsert = await insertChat({
         user,
         part,
-        createdAt: new Date(),
         role: 'user',
-        document: false,
-    }
-
-    const userInsert = await col.insertOne({
-        user: userChat.user,
-        part: userChat.part,
-        createdAt: userChat.createdAt,
-        role: userChat.role,
-        document: false,
+        type: 'text',
     })
 
-    const modelChat: Pick<
-        Chat,
-        'user' | 'part' | 'createdAt' | 'role' | 'document'
-    > = {
+    const modelInsert = await insertChat({
         user,
         part: text,
-        createdAt: new Date(),
         role: 'model',
-        document: false,
-    }
-
-    const modelInsert = await col.insertOne({
-        user: modelChat.user,
-        part: modelChat.part,
-        createdAt: modelChat.createdAt,
-        role: modelChat.role,
-        document: false,
+        type: 'text',
     })
 
+    const userChat = await readChat(userInsert.insertedId)
+    const modelChat = await readChat(modelInsert.insertedId)
+
+    if (!userChat || !modelChat) {
+        return {
+            ...previousState,
+            error: true,
+            serverError: 'Error reading chat',
+        }
+    }
+
     const chatData: Chat[] = [
-        { ...userChat, _id: userInsert.insertedId.toString() },
-        { ...modelChat, _id: modelInsert.insertedId.toString() },
+        {
+            _id: userChat._id.toString(),
+            role: userChat.role,
+            part: userChat.part,
+            createdAt: userChat.createdAt,
+            user: userChat.user,
+            type: userChat.type,
+        },
+        {
+            _id: modelChat._id.toString(),
+            role: modelChat.role,
+            part: modelChat.part,
+            createdAt: modelChat.createdAt,
+            user: modelChat.user,
+            type: modelChat.type,
+        },
     ]
 
     return {
@@ -118,33 +116,28 @@ export async function uploadFileGeneration(
     url: string,
     user: string
 ): Promise<Chat> {
-    const col = await collection()
     const media = await mediaToBase64Blob(url)
     let insert: InsertOneResult<Document> | undefined
     let content: string = ''
 
     if (
-        media.type !== 'image/jpeg' &&
-        media.type !== 'image/png' &&
-        media.type !== 'image/jpg' &&
-        media.type !== 'image/gif'
+        ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(
+            media.type
+        )
     ) {
         throw new Error('Invalid file type')
     }
 
     try {
         content = await extractDocumentContent(media)
-        insert = await col.insertOne({
+        insert = await insertChat({
             user: user,
             part: content,
-            createdAt: new Date(),
             role: 'user',
-            document: true,
-            documentUrl: url,
+            type: 'image',
+            url: url,
         })
     } catch (err: any) {
-        console.error(err)
-
         throw new Error('Error extracting content')
     }
 
@@ -155,8 +148,8 @@ export async function uploadFileGeneration(
             part: content,
             createdAt: new Date(),
             role: 'user',
-            document: true,
-            documentUrl: url,
+            type: 'image',
+            url: url,
         }
     }
 

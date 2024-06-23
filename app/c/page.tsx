@@ -80,16 +80,16 @@ export default function Page() {
 }
 
 function ChatBubble({ chat }: { readonly chat: Chat }) {
-    return chat.document && chat.documentUrl ? (
+    return chat.type === 'image' && chat.url ? (
         <div className="chat user">
             <nav>
                 <DeleteChat chat={chat} />
             </nav>
             <div className="image">
-                <Link href={chat.documentUrl} target="_new">
+                <Link href={chat.url} target="_new">
                     <Image
-                        src={chat.documentUrl}
-                        alt="Document"
+                        src={chat.url}
+                        alt="Image"
                         width={300}
                         height={300}
                         style={{

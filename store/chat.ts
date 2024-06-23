@@ -7,8 +7,8 @@ export type Chat = {
     part: string
     createdAt: Date
     user: string
-    document: boolean
-    documentUrl?: string
+    type: 'text' | 'audio' | 'image'
+    url?: string
 }
 
 export type ChatState = {
