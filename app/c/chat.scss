@@ -150,6 +150,10 @@ body {
                 &:hover {
                     color: #ffffff;
                 }
+
+                &:disabled {
+                    cursor: not-allowed;
+                }
             }
 
             button.record {
@@ -165,6 +169,10 @@ body {
 
                 &:hover {
                     color: map-get($color, 'error');
+                }
+
+                &:disabled {
+                    cursor: not-allowed;
                 }
             }
 

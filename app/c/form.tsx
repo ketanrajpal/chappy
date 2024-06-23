@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormState } from 'react-dom'
-import { create } from './action'
+import { create, uploadFileGeneration } from './action'
 import { initialChatState } from './schema'
 import { useAppDispatch, useAppSelector } from '@/services/redux'
 import { useEffect, useRef, useState } from 'react'
@@ -13,7 +13,6 @@ import 'regenerator-runtime/runtime'
 import SpeechRecognition, {
     useSpeechRecognition,
 } from 'react-speech-recognition'
-import type { PutBlobResult } from '@vercel/blob'
 
 export function ChatForm() {
     const [state, formAction] = useFormState(create, initialChatState)
@@ -25,7 +24,6 @@ export function ChatForm() {
     const [loading, setLoading] = useState(false)
     const { transcript, listening } = useSpeechRecognition()
 
-    const [blob, setBlob] = useState<PutBlobResult>()
     const inputFileRef = useRef<HTMLInputElement>(null)
 
     const [text, setText] = useState('')
@@ -89,70 +87,87 @@ export function ChatForm() {
             fetch(`/api/upload?filename=${file.name}`, {
                 method: 'POST',
                 body: file,
-            })
-                .then((res) => {
-                    res.json().then((data) => {
-                        setBlob(data)
+            }).then((res) => {
+                uploadFileGeneration(res.url, authState.username as string)
+                    .then((chat) => {
+                        dispatch(createChat(chat))
                     })
-                })
-                .finally(() => {
-                    setLoading(false)
-                })
+                    .catch((error) => {
+                        dispatch(
+                            setMessage({
+                                description: error.message,
+                                type: 'error',
+                            })
+                        )
+                    })
+                    .finally(() => {
+                        setLoading(false)
+                    })
+            })
         }
     }
 
     return (
-        <form
-            action={formAction}
-            autoComplete="off"
-            ref={ref}
-            className={state.error ? 'error' : ''}
-        >
-            <div className="container">
-                <input name="user" type="hidden" value={authState.username} />
+        <>
+            <input
+                name="file"
+                id="file"
+                ref={inputFileRef}
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleChange}
+            />
+            <form
+                action={formAction}
+                autoComplete="off"
+                ref={ref}
+                className={state.error ? 'error' : ''}
+            >
+                <div className="container">
+                    <input
+                        name="user"
+                        type="hidden"
+                        value={authState.username}
+                    />
 
-                <input
-                    name="file"
-                    id="file"
-                    ref={inputFileRef}
-                    type="file"
-                    hidden
-                    accept="image/*"
-                    onChange={handleChange}
-                />
-                <input type="hidden" name="blob" value={blob?.url} />
-                <input
-                    type="text"
-                    placeholder="Type your message here"
-                    name="part"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                />
+                    <input
+                        type="text"
+                        placeholder="Type your message here"
+                        name="part"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                    />
 
-                <button
-                    className="upload"
-                    type="button"
-                    onClick={() => {
-                        document.getElementById('file')?.click()
-                    }}
-                >
-                    <span className="material-symbols-rounded icon">image</span>
-                </button>
+                    <button
+                        className="upload"
+                        type="button"
+                        onClick={() => {
+                            document.getElementById('file')?.click()
+                        }}
+                        disabled={loading}
+                    >
+                        <span className="material-symbols-rounded icon">
+                            image
+                        </span>
+                    </button>
 
-                <button
-                    className="record"
-                    type="button"
-                    onClick={() => {
-                        SpeechRecognition.startListening()
-                        setSpeaking(true)
-                    }}
-                >
-                    <span className="material-symbols-rounded icon">
-                        {listening ? 'radio_button_checked' : 'mic'}
-                    </span>
-                </button>
-                <Button label="Send" loading={loading} />
-            </div>
-        </form>
+                    <button
+                        className="record"
+                        type="button"
+                        disabled={loading}
+                        onClick={() => {
+                            SpeechRecognition.startListening()
+                            setSpeaking(true)
+                        }}
+                    >
+                        <span className="material-symbols-rounded icon">
+                            {listening ? 'radio_button_checked' : 'mic'}
+                        </span>
+                    </button>
+                    <Button label="Send" loading={loading} />
+                </div>
+            </form>
+        </>
     )
 }

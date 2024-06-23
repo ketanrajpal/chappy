@@ -4,7 +4,7 @@ import { collection } from '@/services/mongo'
 import { Chat } from '@/store/chat'
 import { ChatSchema, ChatState } from './schema'
 import generateReply, { extractDocumentContent } from '@/services/google'
-import { ObjectId } from 'mongodb'
+import { InsertOneResult, ObjectId } from 'mongodb'
 import { mediaToBase64 } from '@/services/media'
 
 export async function chats({
@@ -34,9 +34,6 @@ export async function create(
     formData: FormData
 ): Promise<ChatState> {
     const col = await collection()
-    console.log('formData', formData)
-
-    const blob = formData.get('blob') as string
 
     const user = formData.get('user') as string
     const part = formData.get('part') as string
@@ -47,41 +44,6 @@ export async function create(
         return {
             ...previousState,
             error: true,
-        }
-    }
-
-    if (blob) {
-        const media = await mediaToBase64(blob)
-
-        if (
-            media.type !== 'image/jpeg' &&
-            media.type !== 'image/png' &&
-            media.type !== 'image/jpg' &&
-            media.type !== 'image/gif'
-        ) {
-            return {
-                ...previousState,
-                error: true,
-            }
-        }
-
-        try {
-            const content = await extractDocumentContent(media)
-            await col.insertOne({
-                user: user,
-                part: content,
-                createdAt: new Date(),
-                role: 'user',
-                document: true,
-                documentUrl: blob,
-            })
-        } catch (err: any) {
-            console.error(err)
-            return {
-                ...previousState,
-                error: true,
-                serverError: err.message,
-            }
         }
     }
 
@@ -148,4 +110,53 @@ export async function create(
         serverError: undefined,
         chat: chatData,
     }
+}
+
+export async function uploadFileGeneration(
+    url: string,
+    user: string
+): Promise<Chat> {
+    const col = await collection()
+    const media = await mediaToBase64(url)
+    let insert: InsertOneResult<Document> | undefined
+    let content: string = ''
+
+    if (
+        media.type !== 'image/jpeg' &&
+        media.type !== 'image/png' &&
+        media.type !== 'image/jpg' &&
+        media.type !== 'image/gif'
+    ) {
+        throw new Error('Invalid file type')
+    }
+
+    try {
+        content = await extractDocumentContent(media)
+        insert = await col.insertOne({
+            user: user,
+            part: content,
+            createdAt: new Date(),
+            role: 'user',
+            document: true,
+            documentUrl: url,
+        })
+    } catch (err: any) {
+        console.error(err)
+
+        throw new Error('Error extracting content')
+    }
+
+    if (insert) {
+        return {
+            _id: insert.insertedId.toString(),
+            user: user,
+            part: content,
+            createdAt: new Date(),
+            role: 'user',
+            document: true,
+            documentUrl: url,
+        }
+    }
+
+    throw new Error('Error inserting document')
 }
