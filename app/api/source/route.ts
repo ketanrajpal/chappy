@@ -29,55 +29,14 @@ export async function POST(req: NextRequest) {
     const body = await req.text()
     const data = parseQueryString(body)
     let query = data.Body
-    let type: 'text' | 'audio' | 'image' = 'text'
-
-    let content: string = ''
 
     if (data.MediaUrl0 !== undefined) {
-        const media = await mediaToBase64(data.MediaUrl0)
-        if (
-            [
-                'audio/ogg',
-                'audio/wav',
-                'audio/mpeg',
-                'audio/mp3',
-                'audio/mp4',
-                'audio/aac',
-                'audio/flac',
-                'audio/x-wav',
-            ].includes(media.type)
-        ) {
-            const trans = await transcribe(media.url)
-            if (trans) {
-                content = trans
-                type = 'audio'
-            } else error = true
-        } else if (
-            ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(
-                media.type
-            )
-        ) {
-            content = await extractDocumentContent(media)
-            type = 'image'
-        } else {
-            error = true
-        }
-
-        if (error === false) {
-            try {
-                await insertChat({
-                    user: data.WaId,
-                    part: content,
-                    role: 'user',
-                    type: type,
-                    url: media.url,
-                })
-                query = 'Summarise the content'
-            } catch (err: any) {
-                console.error(err)
-                error = true
-            }
-        }
+        const { error: mediaError, query: mediaQuery } = await handleMedia(
+            data.MediaUrl0,
+            data
+        )
+        error = mediaError
+        query = mediaQuery
     }
 
     if (error === false) {
@@ -118,4 +77,55 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(message)
+}
+
+async function handleMedia(mediaUrl: string, data: { [key: string]: string }) {
+    let error = false
+    let content: string = ''
+    const media = await mediaToBase64(mediaUrl)
+    let type: 'text' | 'audio' | 'image' = 'text'
+    let query: string = ''
+
+    switch (media.type) {
+        case 'audio/ogg':
+        case 'audio/wav':
+        case 'audio/mpeg':
+        case 'audio/mp3':
+        case 'audio/mp4':
+        case 'audio/aac':
+        case 'audio/flac':
+        case 'audio/x-wav':
+            const trans = await transcribe(media.url)
+            if (trans) {
+                content = trans
+                type = 'audio'
+                query = `Summarise the content: ${content}`
+            } else error = true
+            break
+
+        case 'image/jpeg':
+        case 'image/png':
+        case 'image/jpg':
+        case 'image/gif':
+            content = await extractDocumentContent(media)
+            type = 'image'
+            query = `Summarise the content: ${content}`
+            break
+
+        default:
+            error = true
+            break
+    }
+
+    if (error === false) {
+        await insertChat({
+            user: data.WaId,
+            part: content,
+            role: 'user',
+            type: type,
+            url: media.url,
+        })
+    }
+
+    return { error, query }
 }
