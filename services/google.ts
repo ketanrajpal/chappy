@@ -69,7 +69,7 @@ export default async function generateReply(chat: Chat[], message: string) {
         },
     })
 
-    const msg = `${message}. Answer in 50 words in UK English. Also add relevant emojis and be casual and friendly. And also be respectful.`
+    const msg = `${message}. Answer in 50 words in UK English be casual, friendly, respectful and use relevant emojis.`
 
     const result = await modelChat.sendMessage(msg)
     const response = result.response

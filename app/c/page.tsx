@@ -80,42 +80,65 @@ export default function Page() {
 }
 
 function ChatBubble({ chat }: { readonly chat: Chat }) {
-    return chat.type === 'image' && chat.url ? (
-        <div className="chat user">
-            <nav>
-                <DeleteChat chat={chat} />
-            </nav>
-            <div className="image">
-                <Link href={chat.url} target="_new">
-                    <Image
-                        src={chat.url}
-                        alt="Image"
-                        width={300}
-                        height={300}
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                        }}
-                    />
-                </Link>
-            </div>
-        </div>
-    ) : chat.role === 'user' ? (
-        <div className="chat user">
-            <nav>
-                <DeleteChat chat={chat} />
-            </nav>
-            <div className="description">{chat.part}</div>
-        </div>
-    ) : (
-        <div className="chat model">
-            <div className="description">{chat.part}</div>
-            <nav>
-                <DeleteChat chat={chat} />
-                <SendMessage chat={chat} />
-            </nav>
-        </div>
-    )
+    switch (chat.type) {
+        case 'image':
+            return (
+                chat.url && (
+                    <div className="chat user">
+                        <nav>
+                            <DeleteChat chat={chat} />
+                        </nav>
+                        <div className="image">
+                            <Link href={chat.url} target="_new">
+                                <Image
+                                    src={chat.url}
+                                    alt="Image"
+                                    width={300}
+                                    height={300}
+                                    style={{
+                                        width: '100%',
+                                        height: 'auto',
+                                    }}
+                                />
+                            </Link>
+                        </div>
+                    </div>
+                )
+            )
+        case 'audio':
+            return (
+                chat.url && (
+                    <div className="chat user">
+                        <nav>
+                            <DeleteChat chat={chat} />
+                        </nav>
+                        <div className="image">
+                            <audio controls>
+                                <source src={chat.url} />
+                                <track kind="captions" />
+                            </audio>
+                        </div>
+                    </div>
+                )
+            )
+        default:
+            return chat.role === 'user' ? (
+                <div className="chat user">
+                    <nav>
+                        <DeleteChat chat={chat} />
+                    </nav>
+                    <div className="description">{chat.part}</div>
+                </div>
+            ) : (
+                <div className="chat model">
+                    <div className="description">{chat.part}</div>
+                    <nav>
+                        <DeleteChat chat={chat} />
+                        <SendMessage chat={chat} />
+                    </nav>
+                </div>
+            )
+    }
 }
 
 function DeleteChat({ chat }: { readonly chat: Chat }) {
