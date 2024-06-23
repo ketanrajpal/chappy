@@ -95,8 +95,6 @@ export async function POST(req: NextRequest) {
         })
     }
 
-    console.log(reply)
-
     const message = await client.messages.create({
         from: data.To,
         body: reply,

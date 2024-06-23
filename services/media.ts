@@ -31,6 +31,7 @@ export async function mediaToBase64(mediaUrl: string): Promise<Media> {
 }
 
 export async function mediaToBase64Blob(mediaUrl: string): Promise<Media> {
+    console.log('mediaUrl', mediaUrl)
     const image = await fetch(mediaUrl)
     const imageBlob = await image.blob()
     const imageBuffer = await imageBlob.arrayBuffer()
