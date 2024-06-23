@@ -5,7 +5,7 @@ import { Chat } from '@/store/chat'
 import { ChatSchema, ChatState } from './schema'
 import generateReply, { extractDocumentContent } from '@/services/google'
 import { InsertOneResult, ObjectId } from 'mongodb'
-import { mediaToBase64 } from '@/services/media'
+import { mediaToBase64Blob } from '@/services/media'
 
 export async function chats({
     username,
@@ -117,7 +117,7 @@ export async function uploadFileGeneration(
     user: string
 ): Promise<Chat> {
     const col = await collection()
-    const media = await mediaToBase64(url)
+    const media = await mediaToBase64Blob(url)
     let insert: InsertOneResult<Document> | undefined
     let content: string = ''
 

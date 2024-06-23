@@ -29,3 +29,21 @@ export async function mediaToBase64(mediaUrl: string): Promise<Media> {
         url: response.url,
     }
 }
+
+export async function mediaToBase64Blob(mediaUrl: string): Promise<Media> {
+    const image = await fetch(mediaUrl)
+    const imageBlob = await image.blob()
+    const imageBuffer = await imageBlob.arrayBuffer()
+    const imageBufferString = Buffer.from(imageBuffer).toString('base64')
+
+    return {
+        media: {
+            inlineData: {
+                data: imageBufferString,
+                mimeType: imageBlob.type,
+            },
+        },
+        type: imageBlob.type,
+        url: mediaUrl,
+    }
+}
