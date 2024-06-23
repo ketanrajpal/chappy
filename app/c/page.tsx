@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '@/services/redux'
 import { logout } from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
-import { chats, DeleteChatAction } from './action'
+import { chats, DeleteChatAction, sendToWhatsApp } from './action'
 import { Chat, deleteChat, setChats } from '@/store/chat'
 
 import Loading from '@/assets/loader.svg'
@@ -16,7 +16,6 @@ import Link from 'next/link'
 export default function Page() {
     const authState = useAppSelector((state) => state.auth)
     const chatState = useAppSelector((state) => state.chat)
-    const speechState = useAppSelector((state) => state.speech)
     const dispatch = useAppDispatch()
     const router = useRouter()
     const ref = useRef<HTMLDivElement>(null)
@@ -113,6 +112,7 @@ function ChatBubble({ chat }: { readonly chat: Chat }) {
             <div className="description">{chat.part}</div>
             <nav>
                 <DeleteChat chat={chat} />
+                <SendMessage chat={chat} />
             </nav>
         </div>
     )
@@ -135,6 +135,36 @@ function DeleteChat({ chat }: { readonly chat: Chat }) {
     return (
         <button className="delete" onClick={handleDelete}>
             <span className="material-symbols-rounded">delete</span>
+        </button>
+    )
+}
+
+function SendMessage({ chat }: { readonly chat: Chat }) {
+    const dispatch = useAppDispatch()
+    return (
+        <button
+            className="send"
+            onClick={() => {
+                sendToWhatsApp(chat)
+                    .then(() => {
+                        dispatch(
+                            setMessage({
+                                type: 'success',
+                                description: 'Message sent successfully',
+                            })
+                        )
+                    })
+                    .catch((error) => {
+                        dispatch(
+                            setMessage({
+                                type: 'error',
+                                description: error.message,
+                            })
+                        )
+                    })
+            }}
+        >
+            <span className="material-symbols-rounded">send</span>
         </button>
     )
 }

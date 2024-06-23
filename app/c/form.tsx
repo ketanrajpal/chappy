@@ -13,6 +13,8 @@ import 'regenerator-runtime/runtime'
 import SpeechRecognition, {
     useSpeechRecognition,
 } from 'react-speech-recognition'
+import Resizer from 'react-image-file-resizer'
+import { v4 as uuid } from 'uuid'
 
 export function ChatForm() {
     const [state, formAction] = useFormState(create, initialChatState)
@@ -58,6 +60,7 @@ export function ChatForm() {
                 })
             }
             ref.current?.reset()
+            setText('')
         }
     }, [
         state.success,
@@ -83,27 +86,36 @@ export function ChatForm() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (inputFileRef.current?.files) {
             const file = inputFileRef.current.files[0]
-            if (file.size > 10 * 1024 * 1024) {
-                dispatch(
-                    setMessage({
-                        description: 'File size should be less than 4MB',
-                        type: 'error',
-                    })
-                )
-
-                return
-            }
-
             setLoading(true)
-            fetch(`/api/upload?filename=${file.name}`, {
-                method: 'POST',
-                body: file,
-            })
-                .then((data) => data.json())
-                .then((res) => {
-                    uploadFileGeneration(res.url, authState.username as string)
-                        .then((chat) => {
-                            dispatch(createChat(chat))
+            resizeFile(file)
+                .then((uri) => {
+                    const ext = file.name.split('.').pop()
+                    fetch(`/api/upload?filename=${uuid().toString()}.${ext}`, {
+                        method: 'POST',
+                        body: uri,
+                    })
+                        .then((data) => data.json())
+                        .then((res) => {
+                            uploadFileGeneration(
+                                res.url,
+                                authState.username as string
+                            )
+                                .then((chat) => {
+                                    dispatch(createChat(chat))
+                                })
+                                .catch((error) => {
+                                    dispatch(
+                                        setMessage({
+                                            description: error.message,
+                                            type: 'error',
+                                        })
+                                    )
+                                })
+                                .finally(() => {
+                                    setLoading(false)
+                                    if (inputFileRef.current)
+                                        inputFileRef.current.value = ''
+                                })
                         })
                         .catch((error) => {
                             dispatch(
@@ -112,10 +124,17 @@ export function ChatForm() {
                                     type: 'error',
                                 })
                             )
-                        })
-                        .finally(() => {
                             setLoading(false)
                         })
+                })
+                .catch((error) => {
+                    dispatch(
+                        setMessage({
+                            description: error.message,
+                            type: 'error',
+                        })
+                    )
+                    setLoading(false)
                 })
         }
     }
@@ -184,3 +203,19 @@ export function ChatForm() {
         </>
     )
 }
+
+const resizeFile = (file: File) =>
+    new Promise<File>((resolve) => {
+        Resizer.imageFileResizer(
+            file,
+            1200,
+            900,
+            'PNG',
+            100,
+            0,
+            (uri) => {
+                resolve(uri as File)
+            },
+            'file'
+        )
+    })

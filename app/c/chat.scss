@@ -83,6 +83,8 @@ body {
                 }
 
                 nav {
+                    display: flex;
+                    flex-direction: column;
                     button {
                         padding: 0.5rem;
                         background-color: transparent;
@@ -97,6 +99,17 @@ body {
 
                         &:hover {
                             color: map-get($color, 'primary');
+                        }
+                    }
+
+                    button.send {
+                        img {
+                            height: 0.9rem;
+                            width: 0.9rem;
+                            opacity: 0.75;
+                            &:hover {
+                                opacity: 1;
+                            }
                         }
                     }
                 }

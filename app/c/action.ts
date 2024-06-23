@@ -6,6 +6,8 @@ import { ChatSchema, ChatState } from './schema'
 import generateReply, { extractDocumentContent } from '@/services/google'
 import { InsertOneResult, ObjectId } from 'mongodb'
 import { mediaToBase64Blob } from '@/services/media'
+import { client } from '@/services/twilio'
+import { MessageInstance } from 'twilio/lib/rest/api/v2010/account/message'
 
 export async function chats({
     username,
@@ -159,4 +161,21 @@ export async function uploadFileGeneration(
     }
 
     throw new Error('Error inserting document')
+}
+
+export async function sendToWhatsApp(chat: Chat): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        return client.messages
+            .create({
+                from: 'whatsapp:+14155238886',
+                body: chat.part,
+                to: `whatsapp:+${chat.user}`,
+            })
+            .then((message) => {
+                resolve(true)
+            })
+            .catch((error) => {
+                reject(false)
+            })
+    })
 }
