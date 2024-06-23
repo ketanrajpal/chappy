@@ -84,6 +84,19 @@ export function ChatForm() {
         if (inputFileRef.current?.files) {
             setLoading(true)
             const file = inputFileRef.current.files[0]
+
+            // if file size more than 4Mb then return
+            if (file.size > 4 * 1024 * 1024) {
+                dispatch(
+                    setMessage({
+                        description: 'File size should be less than 4MB',
+                        type: 'error',
+                    })
+                )
+                setLoading(false)
+                return
+            }
+
             fetch(`/api/upload?filename=${file.name}`, {
                 method: 'POST',
                 body: file,
