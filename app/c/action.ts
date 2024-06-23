@@ -120,8 +120,10 @@ export async function uploadFileGeneration(
     let insert: InsertOneResult<Document> | undefined
     let content: string = ''
 
+    console.log(media)
+
     if (
-        ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(
+        !['image/jpeg', 'image/png', 'image/jpg', 'image/gif'].includes(
             media.type
         )
     ) {
