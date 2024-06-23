@@ -118,7 +118,8 @@ body {
         div.container {
             height: 3.5rem;
             display: grid;
-            grid-template-columns: 1fr auto auto;
+            grid-template-columns: 1fr auto auto auto;
+            column-gap: 0.5rem;
             padding: 0.5rem;
 
             input {
@@ -135,13 +136,29 @@ body {
                 }
             }
 
+            button.upload {
+                background-color: transparent;
+                border: none;
+                color: map-get($color, 'tertiary');
+                cursor: pointer;
+                transition: all 0.2s ease-in;
+
+                span {
+                    font-size: 1.5rem;
+                }
+
+                &:hover {
+                    color: #ffffff;
+                }
+            }
+
             button.record {
                 background-color: transparent;
                 border: none;
                 color: map-get($color, 'error');
                 cursor: pointer;
                 transition: all 0.2s ease-in;
-                padding: 0 1rem;
+
                 span {
                     font-size: 1.5rem;
                 }

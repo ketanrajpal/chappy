@@ -3,8 +3,9 @@
 import { collection } from '@/services/mongo'
 import { Chat } from '@/store/chat'
 import { ChatSchema, ChatState } from './schema'
-import generateReply from '@/services/google'
+import generateReply, { extractDocumentContent } from '@/services/google'
 import { ObjectId } from 'mongodb'
+import { mediaToBase64 } from '@/services/media'
 
 export async function chats({
     username,
@@ -32,6 +33,11 @@ export async function create(
     previousState: ChatState,
     formData: FormData
 ): Promise<ChatState> {
+    const col = await collection()
+    console.log('formData', formData)
+
+    const blob = formData.get('blob') as string
+
     const user = formData.get('user') as string
     const part = formData.get('part') as string
 
@@ -41,6 +47,41 @@ export async function create(
         return {
             ...previousState,
             error: true,
+        }
+    }
+
+    if (blob) {
+        const media = await mediaToBase64(blob)
+
+        if (
+            media.type !== 'image/jpeg' &&
+            media.type !== 'image/png' &&
+            media.type !== 'image/jpg' &&
+            media.type !== 'image/gif'
+        ) {
+            return {
+                ...previousState,
+                error: true,
+            }
+        }
+
+        try {
+            const content = await extractDocumentContent(media)
+            await col.insertOne({
+                user: user,
+                part: content,
+                createdAt: new Date(),
+                role: 'user',
+                document: true,
+                documentUrl: blob,
+            })
+        } catch (err: any) {
+            console.error(err)
+            return {
+                ...previousState,
+                error: true,
+                serverError: err.message,
+            }
         }
     }
 
@@ -58,7 +99,6 @@ export async function create(
         }
     }
 
-    const col = await collection()
     const userChat: Pick<
         Chat,
         'user' | 'part' | 'createdAt' | 'role' | 'document'
