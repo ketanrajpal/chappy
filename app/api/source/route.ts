@@ -34,12 +34,7 @@ export async function POST(req: NextRequest) {
     let content: string = ''
 
     if (data.MediaUrl0 !== undefined) {
-        console.log(data.MediaUrl0)
-
         const media = await mediaToBase64(data.MediaUrl0)
-
-        console.log(media)
-
         if (
             [
                 'audio/ogg',
