@@ -22,7 +22,7 @@
     "assemblyai": "^4.5.0",
     "audio-type": "^2.2.1",
     "mongodb": "^6.7.0",
-    "next": "14.2.4",
+    "next": "14.2.12",
     "normalize.css": "^8.0.1",
     "react": "^18",
     "react-dom": "^18",
